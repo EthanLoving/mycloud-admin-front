@@ -1,0 +1,687 @@
+<style lang="scss">
+  @import "user-manage";
+</style>
+<template>
+  <div style="background:#eee;padding:7px;height: 90%">
+    <Card :bordered="false">
+      <Row>
+        <Form :model="searchFrom" ref="searchFrom" :label-width="60" inline>
+          <FormItem label="用户名:" prop="t.username">
+            <Input v-model="searchFrom.t.username" placeholder="请输入用户名"></Input>
+          </FormItem>
+          <FormItem label="手机号:" prop="t.phone">
+            <Input v-model="searchFrom.t.phone" placeholder="请输入手机号" number></Input>
+          </FormItem>
+          <FormItem label="邮箱:" prop="t.email">
+            <Input v-model="searchFrom.t.email" placeholder="请输入邮箱"></Input>
+          </FormItem>
+          <FormItem label="性别:" prop="t.gender">
+            <Select v-model="searchFrom.t.gender">
+              <Option value="1">男</Option>
+              <Option value="0">女</Option>
+            </Select>
+          </FormItem>
+          <FormItem>
+            <Button type="primary" @click="searchUser">查询</Button>
+            <Button style="margin-left: 8px" @click="resetSearchForm">重置</Button>
+          </FormItem>
+        </Form>
+      </Row>
+      <Row class="operation">
+        <Button v-hasPermission="'sys_account_add'" @click="add" type="primary" icon="md-add">添加用户</Button>
+        <Button @click="delAll" icon="md-trash">批量删除</Button>
+        <Dropdown @on-click="handleDropdown">
+          <Button>更多操作
+            <Icon type="md-arrow-dropdown"/>
+          </Button>
+          <DropdownMenu slot="list">
+            <DropdownItem name="refresh">刷新</DropdownItem>
+            <DropdownItem name="exportData">导出所选数据</DropdownItem>
+            <DropdownItem name="exportAll">导出全部数据</DropdownItem>
+            <DropdownItem name="importData">导入数据</DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
+      </Row>
+      <Row>
+        <Alert show-icon>
+          已选择
+          <span class="select-count">{{selectCount}}</span> 项
+          <a class="select-clear" @click="clearSelectAll">清空</a>
+        </Alert>
+      </Row>
+      <div>
+        <Table :data="tableData"
+               :loading="loading"
+               border
+               sortable="custom"
+               :columns="tableColumns"
+               ref="table"
+               @on-selection-change="showSelect"
+               stripe>
+          <template slot-scope="{ row, index }" slot="action">
+            <Button v-hasPermission="'sys_account_edit'" type="primary" size="small" @click="edit(row)">编辑</Button>
+            <Button v-hasPermission="'sys_account_disable'" type="default" size="small" v-if="row.enabled==0" style="background-color: #B22222" ghost
+                    @click="enable(row)">启用
+            </Button>
+            <Button v-hasPermission="'sys_account_disable'" type="default" size="small" v-if="row.enabled==1" style="background-color: #5c5c5c" ghost
+                    @click="disable(row)">禁用
+            </Button>
+            <Button v-hasPermission="'sys_account_del'" type="error" size="small" @click="removeUser(row)">删除</Button>
+          </template>
+        </Table>
+        <Table
+          :columns="exportColumns"
+          :data="exportData"
+          ref="exportTable"
+          style="display:none"
+        ></Table>
+        <!--分页插件-->
+        <div style="margin: 10px;overflow: hidden">
+          <div style="float: right;">
+            <Page :total="total" :current="searchFrom.current" :page-size="searchFrom.size"
+                  @on-change="changePage"
+                  @on-page-size-change="changePageSize"
+                  prev-text="上一页"
+                  next-text="下一页"
+                  show-total
+                  show-elevator
+                  show-sizer
+                  :transfer="true"></Page>
+          </div>
+        </div>
+      </div>
+    </Card>
+    <Modal
+      :title="modalTitle"
+      v-model="userModalVisible"
+      :mask-closable="false"
+      :width="500"
+      :styles="{top: '30px'}"
+    >
+      <Form ref="userForm" :model="userForm" :label-width="60" :rules="userFormValidate">
+        <FormItem label="用户名" prop="username">
+          <Input type="text" v-model="userForm.username" autocomplete="off" inline="true"/>
+        </FormItem>
+        <FormItem label="密码" prop="password" v-if="modalType===0" :error="errorPass">
+          <Input type="password" v-model="userForm.password" autocomplete="off"/>
+        </FormItem>
+        <FormItem label="邮箱" prop="email">
+          <Input type="text" v-model="userForm.email"/>
+        </FormItem>
+        <FormItem label="手机号" prop="phone">
+          <Input type="text" v-model="userForm.phone"/>
+        </FormItem>
+        <FormItem label="头像" prop="avatar">
+          <Input type="text" v-model="userForm.avatar"/>
+        </FormItem>
+        <FormItem label="所属部门" prop="deptId">
+          <department-tree-choose width="285px" @on-change="handleSelectDepTree" ref="depTree"></department-tree-choose>
+        </FormItem>
+        <FormItem label="角色" prop="rids">
+          <Select v-model="userForm.rids" multiple>
+            <Option v-for="item in roleList" :value="item.id" :key="item.id" :label="item.name">
+              <!-- <div style="display:flex;flex-direction:column"> -->
+              <span style="margin-right:10px;">{{ item.name }}</span>
+              <span style="color:#ccc;">{{ item.description }}</span>
+              <!-- </div> -->
+            </Option>
+          </Select>
+        </FormItem>
+      </Form>
+      <div slot="footer">
+        <Button type="text" @click="cancelUser">取消</Button>
+        <Button size="large" type="primary" :loading="submitLoading" @click="submitUser">提交</Button>
+      </div>
+    </Modal>
+  </div>
+</template>
+
+<script>
+  import expandRow from './userExpand.vue'
+  import {
+    getUserListPage,
+    addUser,
+    editUser,
+    disableUser,
+    delUser,
+    getAll
+  } from '@/api/system/user-manage'
+  import { getAllRoleList } from '@/api/system/role-manage'
+  import departmentTreeChoose from '@/my-components/department-tree-choose'
+
+  export default {
+    name: 'userManage',
+    components: {
+      expandRow,
+      departmentTreeChoose
+    },
+    data() {
+      const validateMobile = (rule, value, callback) => {
+        var reg = /^[1][3,4,5,7,8][0-9]{9}$/
+        if (!reg.test(value)) {
+          callback(new Error('手机号格式错误'))
+        } else {
+          callback()
+        }
+      }
+      return {
+        modalType: 0,
+        submitLoading: false,
+        /* 总页数*/
+        total: 0,
+        selectCount: 0,
+        /* 搜索表单*/
+        searchFrom: {
+          t: {
+            username: '',
+            phone: '',
+            email: '',
+            gender: '',
+            deptName: 'sss'
+          },
+          current: 1,
+          size: 10
+        },
+        roleList: [],
+        dictSex: [],
+        /* 添加用户表单字段*/
+        userForm: {
+          username: '',
+          password: '',
+          phone: '',
+          sex: 1,
+          avatar: '',
+          deptId: '',
+          rids: []
+        },
+        userFormValidate: {
+          username: [
+            { required: true, message: '账号不能为空', trigger: 'blur' }
+          ],
+          phone: [
+            { required: true, message: '手机号不能为空', trigger: 'blur' },
+            { validator: validateMobile, trigger: 'blur' }
+          ],
+          email: [
+            { required: true, message: '请输入邮箱地址' },
+            { type: 'email', message: '邮箱格式不正确' }
+          ],
+          rids: [{ required: true, message: '请选择角色' }]
+        },
+        /* 对话框数据*/
+        modalTitle: '',
+        userModalVisible: false,
+        errorPass: '',
+        loading: true,
+        operationLoading: false,
+        loadingExport: true,
+        modalExportAll: false,
+        drop: false,
+        dropDownContent: '展开',
+        dropDownIcon: 'ios-arrow-down',
+        /** 表格数据 **/
+        tableData: [],
+        /** 表格字段 **/
+        tableColumns: [
+          {
+            type: 'selection',
+            width: 60,
+            align: 'center',
+            fixed: 'left'
+          },
+          {
+            type: 'expand',
+            width: 50,
+            fixed: 'left',
+            render: (h, params) => {
+              return h(expandRow, {
+                props: {
+                  row: params.row
+                }
+              })
+            }
+          },
+          {
+            type: 'index',
+            width: 80,
+            align: 'center',
+            fixed: 'left',
+            title: '序号'
+          },
+          {
+            title: '用户名',
+            width: 100,
+            align: 'center',
+            key: 'username',
+            fixed: 'left',
+            sortable: true
+          },
+          {
+            title: '头像',
+            width: 70,
+            key: 'avatar',
+            render: (h, params) => {
+              const row = params.row
+              return h('img', {
+                attrs: {
+                  src: row.avatar
+                }, style: {
+                  width: '50px',
+                  height: '50px'
+                },
+                on: {
+                  click: () => {
+                    this.menu2('/')
+                  }
+                }
+              })
+            }
+          },
+          {
+            title: '所属部门',
+            width: 100,
+            key: 'deptName'
+          },
+          {
+            title: '手机',
+            align: 'center',
+            width: 120,
+            key: 'phone'
+          },
+          {
+            title: '邮箱',
+            align: 'center',
+            width: 160,
+            key: 'email'
+          },
+          {
+            title: '性别',
+            width: 70,
+            align: 'center',
+            key: 'gender',
+            render: (h, params) => {
+              const gender = params.row.gender
+              if (gender === 1) {
+                return h('span', '男')
+              } else {
+                return h('span', '女')
+              }
+            }
+          },
+          {
+            title: '用户类型',
+            width: 140,
+            align: 'center',
+            key: 'type',
+            render: (h, params) => {
+              const row = params.row
+
+              if (row.type === 1) {
+                return h('Tag', {
+                  props: {
+                    color: '#FF0000'
+                  }
+                }, '超级管理员')
+              } else {
+                return h('Tag', {
+                  props: {
+                    color: '#FF6347'
+                  }
+                }, '普通管理员')
+              }
+            }
+          },
+          {
+            title: '状态',
+            key: 'enabled',
+            width: 110,
+            align: 'center',
+            render: (h, params) => {
+              const row = params.row
+
+              if (row.enabled === 1) {
+                return h('Tag', {
+                  props: {
+                    color: 'success'
+                  }
+                }, '启用')
+              } else {
+                return h('Tag', {
+                  props: {
+                    color: 'error'
+                  }
+                }, '禁用')
+              }
+            }
+          },
+          {
+            title: '操作',
+            slot: 'action',
+            width: 200,
+            align: 'center',
+            fixed: 'right'
+          }
+        ],
+        exportColumns: [
+          {
+            title: '用户名',
+            key: 'username'
+          },
+          {
+            title: '头像',
+            key: 'avatar'
+          },
+          {
+            title: '所属部门ID',
+            key: 'departmentId'
+          },
+          {
+            title: '所属部门',
+            key: 'departmentTitle'
+          },
+          {
+            title: '手机',
+            key: 'mobile'
+          },
+          {
+            title: '邮箱',
+            key: 'email'
+          },
+          {
+            title: '性别',
+            key: 'sex'
+          },
+          {
+            title: '用户类型',
+            key: 'type'
+          },
+          {
+            title: '状态',
+            key: 'status'
+          },
+          {
+            title: '删除标志',
+            key: 'delFlag'
+          },
+          {
+            title: '创建时间',
+            key: 'createTime'
+          },
+          {
+            title: '更新时间',
+            key: 'updateTime'
+          }
+        ],
+        data: [],
+        exportData: []
+      }
+    },
+    methods: {
+      // 注意事项：对DOM一系列的js操作最好都要放进Vue.nextTick()的回调函数中
+      // this.$nextTick(()=>{
+      //   this.$refs[formName].resetFields();
+      // })
+      searchUser() {
+        this.getUserList()
+      },
+      resetSearchForm() {
+        this.$refs.searchFrom.resetFields()
+      },
+      cancelUser() {
+        this.userModalVisible = false
+        this.$refs.userForm.resetFields()
+      },
+      submitUser() {
+        this.submitLoading = true
+        this.$refs.userForm.validate(valid => {
+          if (valid) {
+            if (this.modalType === 0) {
+              delete this.userForm.id
+              delete this.userForm.status
+              if (
+                this.userForm.password === '' ||
+                this.userForm.password === undefined
+              ) {
+                this.errorPass = '密码不能为空'
+                return
+              }
+              if (this.userForm.password.length < 6) {
+                this.errorPass = '密码长度不得少于6位'
+                return
+              }
+              this.submitLoading = true
+              this.$Modal.confirm({
+                title: '确认添加',
+                content: '是否确认提交？',
+                onOk: () => {
+                  addUser(this.userForm).then(res => {
+                    this.submitLoading = false
+                    if (res.success === true) {
+                      this.$Message.success('操作成功')
+                      this.getUserList()
+                      this.userModalVisible = false
+                    }
+                  })
+                },
+                onCancel: () => {
+                  this.$Message.info('Clicked cancel')
+                }
+              })
+            } else {
+              // 编辑
+              this.submitLoading = true
+              this.$Modal.confirm({
+                title: '编辑提交',
+                content: '<p>是否确认提交</p>',
+                onOk: () => {
+                  editUser(this.userForm).then(res => {
+                    this.submitLoading = false
+                    if (res.success === true) {
+                      this.$Message.success('操作成功')
+                      this.getUserList()
+                      this.userModalVisible = false
+                    }
+                  })
+                }
+              })
+            }
+          }
+          this.submitLoading = false
+        })
+      },
+      changePage(v) {
+        this.searchFrom.current = v
+        this.getUserList()
+      },
+      changePageSize(v) {
+        this.searchFrom.size = v
+        this.getUserList()
+      },
+      /* 下拉操作*/
+      handleDropdown(name) {
+        if (name === 'refresh') {
+          this.getUserList()
+        } else if (name === 'exportData') {
+          if (this.selectCount <= 0) {
+            this.$Message.warning('您还未选择要导出的数据')
+            return
+          }
+          this.$Modal.confirm({
+            title: '确认导出',
+            content: '您确认要导出所选 ' + this.selectCount + ' 条数据?',
+            onOk: () => {
+              this.$refs.exportTable.exportCsv({
+                filename: '用户数据'
+              })
+            }
+          })
+        } else if (name === 'exportAll') {
+          this.exportAll()
+        }
+      },
+      /* 导出全部*/
+      exportAll() {
+        getAll().then(res => {
+          this.modalExportAll = false
+          if (res.success) {
+            this.exportData = res.data
+            setTimeout(() => {
+              this.$refs.exportTable.exportCsv({
+                filename: '用户全部数据'
+              })
+            }, 1000)
+          }
+        })
+      },
+      /* 点击添加*/
+      add() {
+        this.modalType = 0
+        this.modalTitle = '添加用户'
+        this.$refs.userForm.resetFields()
+        this.userForm.deptId = []
+        this.userModalVisible = true
+      },
+      /* 点击编辑*/
+      edit(row) {
+        this.modalType = 1
+        this.modalTitle = '编辑用户'
+        this.$refs.userForm.resetFields()
+        this.userModalVisible = true
+        // 转换null为""
+        for (const attr in row) {
+          if (row[attr] === null) {
+            row[attr] = ''
+          }
+        }
+        const str = JSON.stringify(row)
+        const data = JSON.parse(str)
+        this.userForm.id = data.id
+        this.userForm.username = data.username
+        this.userForm.password = data.password
+        this.userForm.phone = data.phone
+        this.userForm.email = data.email
+        this.userForm.avatar = data.avatar
+        this.userForm.rids = data.roles.split(',')
+        this.$refs.depTree.setSelectDep([data.deptId], data.deptName)
+      },
+      /* 禁用*/
+      disable(row) {
+        this.$Modal.confirm({
+          title: '确认禁用',
+          content: '您确认要禁用用户 ' + row.username + ' ?',
+          onOk: () => {
+            this.operationLoading = true
+            disableUser({ id: row.id, enabled: 0 }).then(res => {
+              if (res.success === true) {
+                this.getUserList()
+              }
+            })
+          }
+        })
+      },
+      /* 启用*/
+      enable(row) {
+        this.$Modal.confirm({
+          title: '确认禁用',
+          content: '您确认要启用用户 ' + row.username + ' ?',
+          onOk: () => {
+            this.operationLoading = true
+            disableUser({ id: row.id, enabled: 1 }).then(res => {
+              if (res.success === true) {
+                this.getUserList()
+              }
+            })
+          }
+        })
+      },
+      /* 删除用户*/
+      removeUser(row) {
+        this.$Modal.confirm({
+          title: '确认删除',
+          content: '您确认要删除用户 ' + row.username + ' ?',
+          onOk: () => {
+            this.operationLoading = true
+            delUser(row.id).then(res => {
+              this.operationLoading = false
+              if (res.success === true) {
+                this.$Message.success('删除成功')
+                this.getUserList()
+              }
+            })
+          }
+        })
+      },
+      handleSelectDepTree(v) {
+        this.userForm.deptId = v[0]
+      },
+      /* 加载列表数据*/
+      init() {
+        this.getUserList()
+      },
+      /* 查询用户列表*/
+      getUserList() {
+        getUserListPage(this.searchFrom).then(res => {
+          this.searchFrom.current = res.data.current
+          this.total = res.data.total
+          const data = res.data.records
+          this.tableData = data
+          this.loading = false
+        })
+      },
+      /* 查看*/
+      show(index) {
+        this.$Modal.info({
+          title: 'User Info',
+          content: `Name：${this.data6[index].name}<br>Age：${this.data6[index].age}<br>Address：${this.data6[index].address}`
+        })
+      },
+      showSelect(e) {
+        this.exportData = e
+        this.selectList = e
+        this.selectCount = e.length
+      },
+      /* 批量删除*/
+      delAll() {
+        if (this.selectCount <= 0) {
+          this.$Message.warning('您还未选择要删除的数据')
+          return
+        }
+        this.$Modal.confirm({
+          title: '确认删除',
+          content: '您确认要删除所选的 ' + this.selectCount + ' 条数据?',
+          onOk: () => {
+            let ids = ''
+            this.selectList.forEach(function(e) {
+              ids += e.id + ','
+            })
+            ids = ids.substring(0, ids.length - 1)
+            this.operationLoading = true
+            console.log(ids)
+            delUser(ids).then(res => {
+              this.operationLoading = false
+              if (res.success === true) {
+                this.$Message.success('删除成功')
+                this.clearSelectAll()
+                this.getUserList()
+              }
+            })
+          }
+        })
+      },
+      clearSelectAll() {
+        this.$refs.table.selectAll(false)
+      },
+      getRolesList() {
+        getAllRoleList().then(res => {
+          if (res.success === true) {
+            this.roleList = res.data
+          }
+        })
+      }
+    },
+    mounted() {
+      this.init()
+      this.getRolesList()
+    }
+  }
+</script>
