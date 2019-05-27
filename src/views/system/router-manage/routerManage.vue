@@ -6,26 +6,39 @@
     <Card :bordered="false">
       <Row>
         <Col span="12">
-          <Button type="primary" icon="ios-add" @click="handleAddRouter()">添加路由</Button>
+        <Button type="primary" icon="ios-add" @click="handleAddRouter()">添加路由</Button>
         </Col>
+      </Row>
+      <Row>
+        <Table border :columns="routerColumns" :data="routerTableData"></Table>
       </Row>
     </Card>
     <!--添加路由弹窗-->
-    <Modal v-model="routerAddModal" title="新增路由" :closable="false" :mask-closable="false" :loading="true"
-           width="1000px" @on-ok="submitRouter()">
+    <Modal
+      v-model="routerAddModal"
+      title="新增路由"
+      :closable="false"
+      :mask-closable="false"
+      :loading="true"
+      width="1000px"
+      @on-ok="submitRouter()"
+    >
       <Form :model="formItem" :label-width="120">
-        <FormItem label="路由ID:">
-          <Input v-model="formItem.id" placeholder="请输入id"></Input>
+        <FormItem label="路由名称:">
+          <Input v-model="formItem.routerName" placeholder="请输入路由名称"/>
         </FormItem>
         <FormItem label="路由uri:">
-          <Input v-model="formItem.uri" placeholder="请输入路由uri"></Input>
+          <Input v-model="formItem.uri" placeholder="请输入路由uri"/>
         </FormItem>
         <FormItem label="路由order:">
-          <Input v-model="formItem.order" placeholder="请输入路由order"></Input>
+          <Input v-model="formItem.order" placeholder="请输入路由order"/>
         </FormItem>
         <FormItem label="filters:">
-          <Row v-for="(item,index) in formItem.filters" :key="index"
-               style="border-bottom: 1px solid #f0f0f0;padding: 10px;">
+          <Row
+            v-for="(item,index) in formItem.filters"
+            :key="index"
+            style="border-bottom: 1px solid #f0f0f0;padding: 10px;"
+          >
             <Col span="8">
               <Select v-model="item.name">
                 <Option value="StripPrefix">StripPrefix</Option>
@@ -43,8 +56,11 @@
           </Row>
         </FormItem>
         <FormItem label="predicates:">
-          <Row v-for="(item,index) in formItem.predicates" :key="index"
-               style="border-bottom: 1px solid #f0f0f0;padding: 10px;">
+          <Row
+            v-for="(item,index) in formItem.predicates"
+            :key="index"
+            style="border-bottom: 1px solid #f0f0f0;padding: 10px;"
+          >
             <Col span="8">
               <Select v-model="item.name">
                 <Option value="Path">Path</Option>
@@ -64,14 +80,83 @@
 </template>
 
 <script>
-  import { addRouter } from '@/api/index'
+  import { addRouter,routers } from '@/api/index'
+  import { getRouters } from '../../../api'
+
   export default {
-    name: 'routerManage',
+    name: 'RouterManage',
     data() {
       return {
+        routerColumns: [
+          {
+            title: '路由名称',
+            key: 'routerName'
+          },
+          {
+            title: '服务uri',
+            key: 'uri'
+          },
+          {
+            title: '排序',
+            key: 'order'
+          },
+          {
+            title: '路由断言集合配置',
+            key: 'predicates'
+          },
+          {
+            title: '路由过滤器集合配置',
+            key: 'filters'
+          },
+          {
+            title: 'Action',
+            key: 'action',
+            width: 150,
+            align: 'center',
+            render: (h, params) => {
+              return h('div', [
+                h('Button', {
+                  props: {
+                    type: 'primary',
+                    size: 'small'
+                  },
+                  style: {
+                    marginRight: '5px'
+                  },
+                  on: {
+                    click: () => {
+                      this.show(params.index)
+                    }
+                  }
+                }, '详细信息'),
+                h('Button', {
+                  props: {
+                    type: 'error',
+                    size: 'small'
+                  },
+                  on: {
+                    click: () => {
+                      this.remove(params.index)
+                    }
+                  }
+                }, '删除')
+              ]);
+            }
+          }
+        ],
+        routerTableData: [
+          {
+            id: '123',
+            routerName: 'routerName',
+            uri: 18,
+            order: 'New York No. 1 Lake Park',
+            predicates: 'predicates',
+            filters: 'filters'
+          }
+        ],
         routerAddModal: false,
         formItem: {
-          id: '',
+          routerName: '',
           uri: '',
           order: '',
           select: '',
@@ -92,6 +177,15 @@
       }
     },
     methods: {
+      //路由信息列表
+      init(){
+        this.getRouterTablePageList();
+      },
+      getRouterTablePageList(){
+        getRouters().then(res => {
+          this.routerTableData = res.data.data
+        })
+      },
       handleAddRouter() {
         this.routerAddModal = true
       },
@@ -113,11 +207,14 @@
           }
         })
       },
-      submitRouter(){
-        addRouter(this.formItem).then(res =>{
-          console.log(res.data)
+      submitRouter() {
+        addRouter(this.formItem).then(res => {
+          this.routerAddModal = false
         })
       }
+    },
+    mounted() {
+      this.init()
     }
   }
 </script>

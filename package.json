@@ -1,11 +1,14 @@
 {
-  "name": "vue-element-admin",
+  "name": "mycloud-admin-front",
+  "title": "mycloud-admin-front",
   "version": "4.1.0",
   "description": "A magical vue admin. An out-of-box UI solution for enterprise applications. Newest development stack of vue. Lots of awesome features",
   "author": "Pan <panfree23@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "vue-cli-service serve",
+    "dev": "vue-cli-service server",
+    "start": "vue-cli-service server",
+    "build": "custom-cli build",
     "build:prod": "vue-cli-service build",
     "build:stage": "vue-cli-service build --mode staging",
     "preview": "node build/index.js --preview",
@@ -27,14 +30,15 @@
     ]
   },
   "keywords": [
-    "vue",
-    "admin",
-    "dashboard",
-    "element-ui",
-    "boilerplate",
-    "admin-template",
-    "management-system"
+    "ice",
+    "ice-scaffold"
   ],
+  "scaffoldConfig": {
+    "name": "mycloud-admin",
+    "title": "mycloud-admin Pro",
+    "screenshot": "https://img.alicdn.com/tfs/TB1_bulmpOWBuNjy0FiXXXFxVXa-1920-1080.png"
+  },
+  "templateType": "vue",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/PanJiaChen/vue-element-admin.git"

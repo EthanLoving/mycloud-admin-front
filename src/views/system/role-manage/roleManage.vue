@@ -543,10 +543,10 @@
         this.modalTitle = '分配 ' + v.name + ' 的菜单权限(点击选择)'
         // 匹配勾选
         if (v.pids === undefined) {
-          v.pids = 'xxx';
+          v.pids = 'xxx'
         }
         let rolePerms = v.pids.split(',')
-        console.log(rolePerms.length);
+        console.log(rolePerms.length)
         this.checkPermTree(this.permData, rolePerms)
         // 递归判断子节点
 
@@ -625,9 +625,9 @@
       loadData(item, callback) {
         let that = this
         loadDepartment(item.id).then(res => {
-          console.log(this.editDepartments);
-          if(this.editDepartments === undefined){
-            this.editDepartments = 'xxx';
+          console.log(this.editDepartments)
+          if (this.editDepartments === undefined) {
+            this.editDepartments = 'xxx'
           }
           let roleDeptIds = this.editDepartments.split(',')
           if (res.success === true) {
