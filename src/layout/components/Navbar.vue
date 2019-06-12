@@ -69,11 +69,21 @@ export default {
   },
   methods: {
     toggleSideBar() {
-      this.$store.dispatch('app/toggleSideBar')
+      this.$store.dispatch('toggleSideBar')
     },
-    async logout() {
-      await this.$store.dispatch('user/logout')
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    logout() {
+      this.$Modal.confirm({
+        title: '是否退出',
+        content: '<p>确认要退出吗？</p>',
+        onOk: () => {
+          console.log("确认登出")
+          this.$store.dispatch('Logout').then(() => {
+            //location.reload() // In order to re-instantiate the vue-router object to avoid bugs
+            //this.$router.push(`/login`)
+          })
+        }
+      });
+      //this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     }
   }
 }

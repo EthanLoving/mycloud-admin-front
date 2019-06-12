@@ -1,7 +1,7 @@
 import { login, logout, getInfo } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
-import { setMenus,setBtns,setRoles } from '@/utils/userinfo'
+import { setMenus,setBtns,setRoles,removeMenus } from '@/utils/userinfo'
 import { setStore, getStore, removeStore } from '@/utils/storage'
 const user = {
   state: {
@@ -115,13 +115,14 @@ const user = {
     },
 
     // 用户登出
-    logout({ commit, state }) {
+    Logout({ commit, state }) {
       return new Promise((resolve, reject) => {
         logout(state.token).then(() => {
+          console.log("登出")
           commit('SET_TOKEN', '')
           commit('SET_ROLES', [])
           removeToken()
-          resetRouter()
+          removeMenus();
           resolve()
         }).catch(error => {
           reject(error)

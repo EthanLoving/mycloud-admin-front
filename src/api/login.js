@@ -14,5 +14,5 @@ export function getInfo(data) {
 }
 
 export function logout() {
-  return loginRequest('auth/logout')
+  return loginRequest('auth/logout','post')
 }

@@ -22,7 +22,7 @@ if (env.NODE_ENV === 'development') {
 } else if (env.NODE_ENV === 'test') {
   baseUrl = `http://localhost:8080` // 测试环境地址
 }
-const userApi = 'api-user';
+const userApi = 'api-usc';
 const actApi = 'api-act';
 export {
   baseUrl,
