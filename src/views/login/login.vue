@@ -27,7 +27,7 @@
       return {
         vedioCanPlay: false,
         fixStyle: '',
-        PATH_TO_MP4: 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+        PATH_TO_MP4: '',
         PATH_TO_WEBM: '',
         PATH_TO_JPEG: 'http://pic.netbian.com/uploads/allimg/190510/221228-15574975489aa1.jpg'
       }

@@ -10,9 +10,9 @@
     </Row>
     <div id="login-form">
       <Form ref="loginForm" :model="loginForm" :rules="loginRules">
-        <FormItem prop="userName">
+        <FormItem prop="username">
           <Input
-            v-model="loginForm.userName"
+            v-model="loginForm.username"
             prefix="ios-contact"
             size="large"
             clearable
@@ -83,11 +83,11 @@
         dataBeforeTime: 0,
         IsNormal: '待获取',
         loginForm: {
-          userName: 'admin',
-          password: 'admin'
+          username: 'admin',
+          password: '123456'
         },
         loginRules: {
-          userName: [{ required: true, trigger: 'blur', validator: validateUsername }],
+          username: [{ required: true, trigger: 'blur', validator: validateUsername }],
           password: [{ required: true, trigger: 'blur', validator: validatePassword }]
         },
         pwdType: 'password'
@@ -115,21 +115,18 @@
         }
       },
       handleLogin() {
-        // this.loading = true;
-        this.$router.push({ path: '/' })
+        this.loading = true;
         this.$refs.loginForm.validate(valid => {
           if (valid) {
             this.loading = true
-            this.$store.dispatch('user/login', this.loginForm)
-              .then(() => {
-                this.$router.push({ path: this.redirect || '/' })
-                this.loading = false
-              })
-              .catch(() => {
+            this.$store.dispatch('Login', this.loginForm).then(() => {
+              this.loading = false
+              this.$router.push({ path: '/index' })
+              }).catch(() => {
                 this.loading = false
               })
           } else {
-            console.log('error submit!!')
+            console.log('登陆提交异常!!')
             return false
           }
         })
@@ -154,7 +151,7 @@
         this.dataBeforeTime = new Date().getTime()
         // 调取HTTP API获取数据
         serverAttach().then(response => {
-          const code = response.data.code
+          const code = response.code
           this.IsNormal = code === '5200'
           this.commDelay = new Date().getTime() - this.dataBeforeTime
         }).catch(error => {
