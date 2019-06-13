@@ -69,7 +69,7 @@ export default {
   },
   methods: {
     toggleSideBar() {
-      this.$store.dispatch('toggleSideBar')
+      this.$store.dispatch('ToggleSideBar')
     },
     logout() {
       this.$Modal.confirm({
@@ -79,7 +79,7 @@ export default {
           console.log("确认登出")
           this.$store.dispatch('Logout').then(() => {
             //location.reload() // In order to re-instantiate the vue-router object to avoid bugs
-            //this.$router.push(`/login`)
+            this.$router.push(`/login`)
           })
         }
       });

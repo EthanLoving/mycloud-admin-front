@@ -34,7 +34,7 @@
                 :src="go"
                 frameborder="0"
                 width="100%"
-                height="525px"
+                height="750px"
                 scrolling="auto"
               ></iframe>
               <Spin fix size="large" v-if="loading"></Spin>
@@ -101,3 +101,6 @@
       }
     };
 </script>
+<style scoped>
+
+</style>

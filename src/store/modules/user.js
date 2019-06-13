@@ -119,10 +119,9 @@ const user = {
       return new Promise((resolve, reject) => {
         logout(state.token).then(() => {
           console.log("登出")
-          commit('SET_TOKEN', '')
-          commit('SET_ROLES', [])
           removeToken()
-          removeMenus();
+          removeMenus()
+          console.log("清除用户数据成功")
           resolve()
         }).catch(error => {
           reject(error)
