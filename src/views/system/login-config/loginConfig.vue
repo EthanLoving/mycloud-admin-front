@@ -22,7 +22,8 @@
       <Upload
         multiple
         type="drag"
-        action="//jsonplaceholder.typicode.com/posts/"
+        :show-upload-list="true"
+        action="upload_host"
       >
         <div style="padding: 20px 0">
           <Icon type="ios-cloud-upload" size="52" style="color: #3399ff" />
@@ -34,6 +35,7 @@
 </template>
 
 <script>
+  import oss from '@/utils/aliOss'
 export default {
   name: 'LoginConfig',
   data() {
@@ -46,6 +48,21 @@ export default {
       this.bgAddModal = true
     },
     submitUpload() {
+    },
+    async fnUploadRequest (option) {
+      oss.ossUploadFile(option)
+    },
+    // 视频上传
+    beforeUploadVideo (file) {
+      //todo
+    },
+    // 视频上传成功后
+    handleVideoSuccess (response, file, fileList) {
+      //todo
+    },
+    // 视频添加多个视频文件事件
+    beyondFile (files, fileList) {
+      //todo
     }
   }
 }
