@@ -103,13 +103,17 @@
                 </Tooltip>
               </FormItem>
               <FormItem label="图标" prop="icon">
+<!--                <Input-->
+<!--                  :icon="menuForm.icon"-->
+<!--                  placeholder="请选择选择图标"-->
+<!--                  v-model="menuForm.icon"-->
+<!--                  @on-focus="showEditIcon(0)"-->
+<!--                  style="width:400px"/>-->
                 <Input
                   :icon="menuForm.icon"
                   placeholder="请选择选择图标"
                   v-model="menuForm.icon"
-                  @on-focus="showEditIcon(0)"
-                  style="width:400px"
-                />
+                  style="width:400px"/>
               </FormItem>
               <FormItem label="前端组件" prop="component">
                 <Input v-model="menuForm.component" style="width:400px"/>
@@ -198,7 +202,8 @@
             </Tooltip>
           </FormItem>
           <FormItem label="图标" prop="icon">
-            <Input :icon="menuFormAdd.icon" placeholder="点击选择图标" v-model="menuFormAdd.icon" @on-focus="showEditIcon(1)"/>/>
+<!--            <Input :icon="menuFormAdd.icon" placeholder="点击选择图标" v-model="menuFormAdd.icon" @on-focus="showEditIcon(1)"/>-->
+            <Input :icon="menuFormAdd.icon" placeholder="点击选择图标" v-model="menuFormAdd.icon"/>
           </FormItem>
           <FormItem label="前端组件" prop="component">
             <Input v-model="menuFormAdd.component"/>
