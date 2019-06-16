@@ -151,12 +151,14 @@
             title: '角色名称',
             key: 'name',
             width: 150,
+            align: 'center',
             sortable: true
           },
           {
             title: '备注',
             key: 'remark',
             minWidth: 190,
+            align: 'center',
             sortable: true
           },
           {
@@ -164,12 +166,14 @@
             key: 'createTime',
             width: 160,
             sortable: true,
+            align: 'center',
             sortType: 'desc'
           },
           {
             title: '更新时间',
             key: 'updateTime',
             width: 160,
+            align: 'center',
             sortable: true
           },
           {
