@@ -15,7 +15,7 @@ import router from './router'
 import './icons' // icon
 import './permission' // permission control
 import './utils/error-log' // error log
-
+import hasPermission from './libs/hasPermission';
 import * as filters from './filters' // global filters
 // eslint-disable-next-line no-unused-vars
 import iView from 'iview'
@@ -32,7 +32,7 @@ Vue.use(iView)
 Vue.use(Element, {
   size: Cookies.get('size') || 'medium' // set element-ui default size
 })
-
+Vue.use(hasPermission);
 // register global utility filters
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
