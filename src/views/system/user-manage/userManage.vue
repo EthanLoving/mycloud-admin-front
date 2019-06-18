@@ -250,7 +250,7 @@
           },
           {
             title: '用户名',
-            width: 100,
+            width: 200,
             align: 'center',
             key: 'username',
             fixed: 'left',
@@ -258,7 +258,8 @@
           },
           {
             title: '头像',
-            width: 70,
+            width: 120,
+            align: 'center',
             key: 'avatar',
             render: (h, params) => {
               const row = params.row
@@ -279,13 +280,14 @@
           },
           {
             title: '所属部门',
-            width: 100,
+            width: 120,
+            align: 'center',
             key: 'deptName'
           },
           {
             title: '手机',
             align: 'center',
-            width: 120,
+            width: 180,
             key: 'phone'
           },
           {
@@ -353,6 +355,12 @@
                 }, '禁用')
               }
             }
+          },
+          {
+            title: '创建时间',
+            align: 'center',
+            width: 160,
+            key: 'createTime'
           },
           {
             title: '操作',
