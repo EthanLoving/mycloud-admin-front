@@ -1,7 +1,7 @@
 import { getRequest, postRequest } from '../utils/request'
 const base = ''
 
-
+import { userApi } from '@/config/env'
 export function serverAttach() {
   return getRequest('route/test')
 }
