@@ -124,7 +124,7 @@
               <span style="margin-left:5px">值越小越靠前，支持小数</span>
             </FormItem>
             <FormItem label="是否启用" prop="enabled">
-              <i-switch size="large" v-model="menuForm.enabled" :true-value="0" :false-value="-1">
+              <i-switch size="large" v-model="menuForm.enabled" :true-value="1" :false-value="0">
                 <span slot="open">启用</span>
                 <span slot="close">禁用</span>
               </i-switch>
@@ -281,7 +281,7 @@
           type: 0,
           sort: 0,
           level: 0,
-          enabled: 0
+          enabled: 1
         },
         menuFormAdd: {
           btnType: '',

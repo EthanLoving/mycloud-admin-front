@@ -24,3 +24,4 @@ export function searchDept(deptName) {
   return postRequest(userApi + '/dept/search', deptName)
 }
 
+export const uploadFileAction = 'http://localhost:9008/upload'

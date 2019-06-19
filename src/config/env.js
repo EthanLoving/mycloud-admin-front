@@ -24,6 +24,7 @@ if (env.NODE_ENV === 'development') {
 }
 const userApi = 'api-usc';
 const actApi = 'api-act';
+const uploadFileAction = "http://10.1.70.39:9008/upload/file"
 export {
   baseUrl,
   iconfontUrl,

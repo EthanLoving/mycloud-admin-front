@@ -1,16 +1,4 @@
 .user-manage {
-    // Vars
-
-    // Support
-
-    // Module
-    & {
-        //
-    }
-
-    // Facets
-
-    // States
 }
 .operation {
   margin-bottom: 2vh;
@@ -18,4 +6,12 @@
 //.searchForm{
 //  margin-top: 20px;
 //}
+.vertical-center-modal{
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
+  .ivu-modal{
+    top: 0;
+  }
+}

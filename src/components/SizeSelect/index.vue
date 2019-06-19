@@ -41,7 +41,7 @@ export default {
     },
     refreshView() {
       // In order to make the cached page re-rendered
-      this.$store.dispatch('tagsView/delAllCachedViews', this.$route)
+      this.$store.dispatch('delAllCachedViews', this.$route)
 
       const { fullPath } = this.$route
 

@@ -60,16 +60,19 @@
                stripe>
           <template slot-scope="{ row, index }" slot="action">
             <Button v-hasPermission="'sys_account_edit'" type="primary" size="small" @click="edit(row)">编辑</Button>
-            <Button v-hasPermission="'sys_account_disable'" type="default" size="small" v-if="row.enabled==0" style="background-color: #B22222" ghost
+            <Button v-hasPermission="'sys_account_disable'" type="default" size="small" v-if="row.enabled==0"
+                    style="background-color: #B22222" ghost
                     @click="enable(row)">启用
             </Button>
-            <Button v-hasPermission="'sys_account_disable'" type="default" size="small" v-if="row.enabled==1" style="background-color: #5c5c5c" ghost
+            <Button v-hasPermission="'sys_account_disable'" type="default" size="small" v-if="row.enabled==1"
+                    style="background-color: #5c5c5c" ghost
                     @click="disable(row)">禁用
             </Button>
             <Button v-hasPermission="'sys_account_del'" type="error" size="small" @click="removeUser(row)">删除</Button>
           </template>
         </Table>
         <Table
+          :loading="loading"
           :columns="exportColumns"
           :data="exportData"
           ref="exportTable"
@@ -113,6 +116,23 @@
         </FormItem>
         <FormItem label="头像" prop="avatar">
           <Input type="text" v-model="userForm.avatar"/>
+          <Upload
+            ref="upload"
+            :show-upload-list="false"
+            :on-success="handleSuccess"
+            :format="['jpg','jpeg','png']"
+            :max-size="2048"
+            :on-format-error="handleFormatError"
+            :on-exceeded-size="handleMaxSize"
+            :before-upload="handleBeforeUpload"
+            multiple
+            type="drag"
+            :action="uploadFileAction"
+            style="display: inline-block;width:58px;">
+            <div style="width: 58px;height:58px;line-height: 58px;">
+              <Icon type="ios-camera" size="20"></Icon>
+            </div>
+          </Upload>
         </FormItem>
         <FormItem label="所属部门" prop="deptId">
           <department-tree-choose width="285px" @on-change="handleSelectDepTree" ref="depTree"></department-tree-choose>
@@ -133,11 +153,19 @@
         <Button size="large" type="primary" :loading="submitLoading" @click="submitUser">提交</Button>
       </div>
     </Modal>
+    <Modal
+      title="查看大图"
+      v-model="userAvatarModel"
+      footer-hide
+      class-name="vertical-center-modal">
+      <img :src="userAvatar" v-if="userAvatarModel" style="width: 100%">
+    </Modal>
   </div>
 </template>
 
 <script>
   import expandRow from './userExpand.vue'
+  import { uploadFileAction } from '@/api/index'
   import {
     getUserListPage,
     addUser,
@@ -148,12 +176,13 @@
   } from '@/api/system/user-manage'
   import { getAllRoleList } from '@/api/system/role-manage'
   import departmentTreeChoose from '@/my-components/department-tree-choose'
-
+  import circleLoading from "../../../my-components/circle-loading.vue";
   export default {
     name: 'userManage',
     components: {
       expandRow,
-      departmentTreeChoose
+      departmentTreeChoose,
+      circleLoading
     },
     data() {
       const validateMobile = (rule, value, callback) => {
@@ -165,6 +194,10 @@
         }
       }
       return {
+        uploadFileAction:"",
+        loading: true, // 表单加载状态
+        userAvatarModel: false,
+        userAvatar: '',
         modalType: 0,
         submitLoading: false,
         /* 总页数*/
@@ -263,19 +296,28 @@
             key: 'avatar',
             render: (h, params) => {
               const row = params.row
-              return h('img', {
-                attrs: {
-                  src: row.avatar
-                }, style: {
-                  width: '50px',
-                  height: '50px'
-                },
-                on: {
-                  click: () => {
-                    this.menu2('/')
-                  }
-                }
-              })
+              return h('div', [
+                  h('img', {
+                    style: {
+                      'margin-top': '10px',
+                      'margin-bottom': '10px',
+                      'border-radius': '4px',
+                      width: '50px',
+                      height: '50px',
+                      cursor: 'pointer'
+                    },
+                    attrs: {
+                      'src': row.avatar,
+                      onerror: row.avatar
+                    },
+                    on: {
+                      click: (e) => {
+                        this.handleAvatarView(e.srcElement.currentSrc)
+                      }
+                    }
+                  })
+                ]
+              )
             }
           },
           {
@@ -685,11 +727,54 @@
             this.roleList = res.data
           }
         })
+      },
+      //预览头像
+      handleAvatarView(url) {
+        this.userAvatarModel = true
+        this.userAvatar = url
+      },
+      //上传头像成功
+      handleView (name) {
+        this.imgName = name;
+        this.visible = true;
+      },
+      //删除头像
+      handleRemove (file) {
+        const fileList = this.$refs.upload.fileList;
+        this.$refs.upload.fileList.splice(fileList.indexOf(file), 1);
+      },
+      //上传头像成功
+      handleSuccess (res, file) {
+        file.url = 'https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar';
+        file.name = '7eb99afb9d5f317c912f08b5212fd69a';
+      },
+      handleFormatError (file) {
+        this.$Notice.warning({
+          title: 'The file format is incorrect',
+          desc: 'File format of ' + file.name + ' is incorrect, please select jpg or png.'
+        });
+      },
+      handleMaxSize (file) {
+        this.$Notice.warning({
+          title: 'Exceeding file size limit',
+          desc: 'File  ' + file.name + ' is too large, no more than 2M.'
+        });
+      },
+      handleBeforeUpload () {
+        const check = this.uploadList.length < 5;
+        if (!check) {
+          this.$Notice.warning({
+            title: 'Up to five pictures can be uploaded.'
+          });
+        }
+        return check;
       }
     },
     mounted() {
+      this.uploadFileAction = uploadFileAction
       this.init()
       this.getRolesList()
+      console.log(uploadFileAction)
     }
   }
 </script>
