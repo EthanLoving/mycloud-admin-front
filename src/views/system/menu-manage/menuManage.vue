@@ -41,10 +41,12 @@
               show-checkbox
               @on-check-change="changeSelect"
               @on-select-change="selectTree"
+              :render="renderContent"
             ></Tree>
           </div>
           <Spin size="large" fix v-if="loading"></Spin>
         </Col>
+        <!--新增表单-->
         <Col span="9">
           <Form ref="menuForm" :model="menuForm" :label-width="85" :rules="menuFormValidate">
             <FormItem label="类型" prop="type">
@@ -103,12 +105,12 @@
                 </Tooltip>
               </FormItem>
               <FormItem label="图标" prop="icon">
-<!--                <Input-->
-<!--                  :icon="menuForm.icon"-->
-<!--                  placeholder="请选择选择图标"-->
-<!--                  v-model="menuForm.icon"-->
-<!--                  @on-focus="showEditIcon(0)"-->
-<!--                  style="width:400px"/>-->
+                                <Input
+                                  :icon="menuForm.icon"
+                                  placeholder="请选择选择图标"
+                                  v-model="menuForm.icon"
+                                  @on-focus="showEditIcon(0)"
+                                  style="width:400px"/>
                 <Input
                   :icon="menuForm.icon"
                   placeholder="请选择选择图标"
@@ -202,7 +204,7 @@
             </Tooltip>
           </FormItem>
           <FormItem label="图标" prop="icon">
-<!--            <Input :icon="menuFormAdd.icon" placeholder="点击选择图标" v-model="menuFormAdd.icon" @on-focus="showEditIcon(1)"/>-->
+            <!--            <Input :icon="menuFormAdd.icon" placeholder="点击选择图标" v-model="menuFormAdd.icon" @on-focus="showEditIcon(1)"/>-->
             <Input :icon="menuFormAdd.icon" placeholder="点击选择图标" v-model="menuFormAdd.icon"/>
           </FormItem>
           <FormItem label="前端组件" prop="component">
@@ -242,14 +244,12 @@
     searchPermission,
     getDictDataByType
   } from '@/api/system/menu-manage'
-  // import IconChoose from '@/my-components/icon-choose'
-  import iconIndex from '@/views/icons/svg-icons/iconIndex'
-  //import util from "@/libs/util.js";
+  import IconChoose from '@/my-components/icon-choose'
+  // import util from "@/libs/util.js";
   export default {
     name: 'menu-manage',
     components: {
-      iconIndex
-      // IconChoose
+      IconChoose
     },
     data() {
       return {
@@ -309,7 +309,7 @@
         this.getDictPermissions()
       },
       getDictPermissions() {
-        getDictDataByType({type:'btns'}).then(res => {
+        getDictDataByType({ type: 'btns' }).then(res => {
           if (res.success) {
             this.dcitPermissions = res.data
           }
@@ -396,6 +396,7 @@
        * @param n
        */
       selectTree(v, n) {
+        console.log('执行了选择节点', n)
         if (n.level === 1 || n.level === 2) {
           this.isButton = false
           this.isMenu = true
@@ -485,7 +486,7 @@
               this.menuFormAdd.icon = ''
               this.menuFormAdd.component = ''
               this.menuFormAdd.pattern = this.menuFormAdd.path
-            }else{
+            } else {
               this.menuFormAdd.title = this.menuFormAdd.name
             }
             addPermission(this.menuFormAdd).then(res => {
@@ -581,7 +582,209 @@
             })
           }
         })
+      },
+      renderContent(h, { root, node, data }) {
+        let icon = ''
+        if (data.level === 1) {
+          icon = 'md-medical'
+        } else if (data.level === 2) {
+          icon = 'md-fastforward'
+        } else if (data.level === 3) {
+          icon = 'md-options'
+        } else if (data.level === 4) {
+          icon = 'md-nuclear'
+        } else {
+          icon = 'md-nuclear'
+        }
+        return h('span', {
+          style: {
+            display: 'inline-block',
+            width: '100%',
+            cursor: 'pointer'
+          },
+          attrs: {
+            draggable: 'true'
+          },
+          on: {
+            dragstart: () => this.handleDragStart(root, node, data),
+            dragover: () => this.handleDragOver(root, node, data),
+            dragend: () => this.handleDragEnd(root, node, data),
+            drop: () => this.handleDrop(root, node, data)
+          }
+        }, [
+          h('span', [
+            h('Icon', {
+              props: {
+                type: icon,
+                size: '16'
+              },
+              style: {
+                marginRight: '8px',
+                marginBottom: '0px'
+              }
+            }),
+            h('span',
+              {
+                style: {
+                  marginRight: '8px',
+                  marginTop: '5px'
+                },
+                class: {
+                  'ivu-tree-title': true,
+                  'ivu-tree-title-selected': data.id == this.menuForm.id
+                },
+                on: {
+                  click: () => {
+                    this.selectTree(node, data)
+                  }
+                }
+              },
+              data.title)
+          ]),
+          h('span', {
+            style: {
+              // display: 'inline-block',
+              fontSize: '18px',
+              marginTop: '-5px',
+              marginRight: '30px',
+              marginLeft: '10px'
+            }
+          }, [
+            h('Button', {
+              props: Object.assign({}, this.buttonProps, {
+                // type: 'primary',
+                icon: 'md-menu',
+                shape: 'circle'
+              }),
+              style: {
+                marginRight: '8px'
+              },
+              on: {
+                click: () => {
+                  this.appendMenu(data)
+                }
+              }
+            }),
+            h('Button', {
+              props: Object.assign({}, this.buttonProps, {
+                icon: 'md-disc',
+                shape: 'circle'
+              }),
+              style: {
+                marginRight: '8px'
+              },
+              on: {
+                click: () => {
+                  this.appendBtn(data)
+                }
+              }
+            }),
+            h('Button', {
+              props: Object.assign({}, this.buttonProps, {
+                icon: 'md-trash',
+                shape: 'circle'
+              }),
+              on: {
+                click: () => {
+                  this.remove(data)
+                }
+              }
+            })
+          ])
+        ])
+      },
+      appendMenu(data) {
+        if(data.type!==1){
+          const children = data.children || []
+          children.push({
+            name: '新增菜单(临时)',
+            title: '新增菜单(临时)',
+            expand: true,
+            level: data.level + 1,
+            type: 0
+          })
+          this.$set(data, 'children', children)
+        }else{
+          this.$Message.info('按钮下不允许新增菜单')
+        }
+
+      },
+      appendBtn(data) {
+        console.log(data.type, data.level)
+        //如果是不是一级菜单
+        if (data.type === 0 && data.level !== 0) {
+          const children = data.children || []
+          children.push({
+            title: '新增按钮(临时)',
+            level: data.level + 1,
+            expand: true,
+            selected: true,
+            enabled: 1,
+            disabled: false,
+            type: 1
+          })
+          this.$set(data, 'children', children)
+        } else {
+          this.$Message.info('只能在菜单下面添加按钮')
+        }
+      },
+      remove(data) {
+        this.$Modal.confirm({
+          title: '确认删除此节点',
+          content: '是否确认提交？',
+          onOk: () => {
+            this.$Message.success('删除成功')
+            deletePermission(data.id).then(res => {
+              this.submitLoading = false
+              if (res.success === true) {
+                this.$Message.success('操作成功')
+                this.getUserList()
+                this.userModalVisible = false
+              }
+            })
+          },
+          onCancel: () => {
+            this.$Message.info('取消删除')
+          }
+        })
+        console.log(data.id)
+        // const parentKey = root.find(el => el === node).parent
+        // const parent = root.find(el => el.nodeKey === parentKey).node
+        // const index = parent.children.indexOf(data)
+        // parent.children.splice(index, 1)
+      },
+      handleDragStart(root, node, data) {
+        const event = window.event || arguments[0]
+        this.dragstartNode = node
+        this.dragstartData = data
+      },
+      handleDragOver(root, node, data) {
+        const event = window.event || arguments[0]
+        event.preventDefault()
+      },
+      handleDragEnd(root, node, data) {
+        const event = window.event || arguments[0]
+        event.preventDefault()
+      },
+      handleDrop(root, node, data) {
+        event.preventDefault()
+        const parentKey = root.find(el => el === node).parent !== 'undefined' ? root.find(el => el === node).parent : ''
+        console.log('parentKey==>', parentKey)
+        if (parentKey === 0 || parentKey) {
+          const parent = root.find(el => el.nodeKey === parentKey).node
+          const index = parent.children.indexOf(data)
+          parent.children.splice(index, 1)
+        } else {
+          for (let i = 0; i < this.data.length; i++) {
+            if (data.id === this.data[i].id) {
+              this.data.splice(i, 1)
+              break
+            }
+          }
+        }
       }
+      // ---------------------
+      // 原文：https://blog.csdn.net/zhongmei121/article/details/87541211
     },
     mounted() {
       this.init()
