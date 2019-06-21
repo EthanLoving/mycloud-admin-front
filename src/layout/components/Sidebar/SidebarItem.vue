@@ -11,7 +11,7 @@
 
     <el-submenu v-else ref="subMenu" :index="resolvePath(item.path)" popper-append-to-body>
       <template slot="title">
-        <Icon size="24" :type="onlyOneChild.meta.icon||(item.meta&&item.meta.icon)" />
+        <Icon size="24" :type="item.meta && item.meta.icon" />
         <item v-if="item.meta" :icon="item.meta && item.meta.icon" :title="item.meta.title" />
       </template>
       <sidebar-item

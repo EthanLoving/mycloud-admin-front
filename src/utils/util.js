@@ -15,7 +15,7 @@ export const loadStyle = url => {
  */
 export const setTitle = function(title) {
   title = title ? `${title}` : 'Mycloud-admin'
-  window.document.title = title + '-MyAdmin'
+  window.document.title = title + '-基于springcloud前后端分离'
 }
 
 /**

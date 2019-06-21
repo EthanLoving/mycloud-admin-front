@@ -111,11 +111,6 @@
                                   v-model="menuForm.icon"
                                   @on-focus="showEditIcon(0)"
                                   style="width:400px"/>
-                <Input
-                  :icon="menuForm.icon"
-                  placeholder="请选择选择图标"
-                  v-model="menuForm.icon"
-                  style="width:400px"/>
               </FormItem>
               <FormItem label="前端组件" prop="component">
                 <Input v-model="menuForm.component" style="width:400px"/>
@@ -204,8 +199,7 @@
             </Tooltip>
           </FormItem>
           <FormItem label="图标" prop="icon">
-            <!--            <Input :icon="menuFormAdd.icon" placeholder="点击选择图标" v-model="menuFormAdd.icon" @on-focus="showEditIcon(1)"/>-->
-            <Input :icon="menuFormAdd.icon" placeholder="点击选择图标" v-model="menuFormAdd.icon"/>
+              <Input :icon="menuFormAdd.icon" placeholder="点击选择图标" v-model="menuFormAdd.icon" @on-focus="showEditIcon(1)"/>
           </FormItem>
           <FormItem label="前端组件" prop="component">
             <Input v-model="menuFormAdd.component"/>
@@ -229,7 +223,7 @@
     </Modal>
     <Modal title="选择图标" v-model="iconModalVisible" :width="800" :styles="{top: '30px'}" footer-hide>
       <!--<icon-choose @on-select="handleSelectIcon"></icon-choose>-->
-      <iconIndex @on-select="handleSelectIcon"></iconIndex>
+      <IconChoose @on-select="handleSelectIcon"></IconChoose>
     </Modal>
   </div>
 </template>
@@ -291,7 +285,7 @@
         menuFormValidate: {
           name: [{ required: true, message: '名称不能为空', trigger: 'blur' }],
           title: [{ required: true, message: '路由英文名不能为空', trigger: 'blur' }],
-          icon: [{ required: true, message: '图标不能为空', trigger: 'blur' }],
+          icon: [{ required: true, message: '图标不能为空', trigger: 'click' }],
           path: [{ required: true, message: '路径不能为空', trigger: 'blur' }],
           component: [
             { required: true, message: '前端组件不能为空', trigger: 'blur' }
@@ -320,7 +314,7 @@
         this.iconModalVisible = true
       },
       handleSelectIcon(v) {
-        if (this.iconType == 0) {
+        if (this.iconType === 0) {
           this.menuForm.icon = v
         } else {
           this.menuFormAdd.icon = v
