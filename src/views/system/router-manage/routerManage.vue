@@ -125,7 +125,7 @@
                   },
                   on: {
                     click: () => {
-                      this.show(params.index)
+                      this.show(params)
                     }
                   }
                 }, '详细信息'),
@@ -144,16 +144,7 @@
             }
           }
         ],
-        routerTableData: [
-          {
-            id: '123',
-            routerName: 'routerName',
-            uri: 18,
-            order: 'New York No. 1 Lake Park',
-            predicates: 'predicates',
-            filters: 'filters'
-          }
-        ],
+        routerTableData: [],
         routerAddModal: false,
         formItem: {
           routerName: '',
@@ -183,7 +174,7 @@
       },
       getRouterTablePageList(){
         getRouters().then(res => {
-          this.routerTableData = res.data.data
+          this.routerTableData = res.data
         })
       },
       handleAddRouter() {
@@ -211,6 +202,10 @@
         addRouter(this.formItem).then(res => {
           this.routerAddModal = false
         })
+      },
+      show(p){
+        this.routerAddModal = true
+        this.formItem = p.row
       }
     },
     mounted() {
