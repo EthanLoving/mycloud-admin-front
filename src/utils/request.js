@@ -1,5 +1,6 @@
 import axios from 'axios'
-import { MessageBox, Message } from 'element-ui'
+import { MessageBox } from 'element-ui'
+import { Message } from 'iview'
 import { baseUrl } from '../config/env'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
@@ -32,7 +33,7 @@ axios.interceptors.response.use(
   /**
    * If you want to get http information such as headers or status
    * Please return  response => response
-  */
+   */
 
   /**
    * Determine the request status by custom code
@@ -43,12 +44,7 @@ axios.interceptors.response.use(
     const res = response.data
     // if the custom code is not 20000, it is judged as an error.
     if (res.code !== '5200') {
-      Message({
-        message: res.message || 'error',
-        type: 'error',
-        duration: 5 * 1000
-      })
-
+      Message.error(res.message || 'error')
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
       if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
         // to re-login
@@ -68,7 +64,6 @@ axios.interceptors.response.use(
     }
   },
   error => {
-    console.log('err' + error) // for debug
     Message({
       message: error.message,
       type: 'error',
@@ -100,7 +95,7 @@ export const uploadFileRequest = (url, params) => {
 export const putRequest = (url, params) => {
   return axios({
     method: 'put',
-    url: baseUrl+`${url}`,
+    url: baseUrl + `${url}`,
     data: params,
     transformRequest: [function(data) {
       let ret = ''

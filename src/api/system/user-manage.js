@@ -6,7 +6,7 @@ import { userApi } from '../../config/env'
 
 // 分页列表查询
 export function getUserListPage(data) {
-  return postRequest(userApi + '/account/page', data)
+  return getRequest(userApi + '/account/page', data)
 }
 
 // 获取用户列表数据

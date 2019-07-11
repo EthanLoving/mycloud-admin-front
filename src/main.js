@@ -37,7 +37,10 @@ Vue.use(hasPermission);
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
 })
-
+// Vue.prototype.$Message.config({
+//   top: 120,                                      //设置高度
+//   duration:3                                   //设置3秒后消失
+// });
 Vue.config.productionTip = false
 
 new Vue({
