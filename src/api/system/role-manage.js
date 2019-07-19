@@ -1,10 +1,9 @@
-import request from '@/utils/request'
 import { deleteRequest, getRequest, postRequest } from '../../utils/request'
 import { userApi } from '../../config/env'
 
 // 分页列表查询
 export function getRoleList(data) {
-  return postRequest(userApi + '/role/page', data)
+  return getRequest(userApi + '/role/page', data)
 }
 /* 角色列表*/
 export function getAllRoleList() {
