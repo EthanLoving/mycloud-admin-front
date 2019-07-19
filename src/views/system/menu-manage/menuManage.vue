@@ -72,6 +72,9 @@
             <FormItem label="路径" prop="path" v-if="menuForm.type===0">
               <Input v-model="menuForm.path" style="width:400px"/>
             </FormItem>
+            <FormItem label="请求url" prop="url" v-if="menuForm.type===0">
+              <Input v-model="menuForm.url" style="width:400px"/>
+            </FormItem>
             <FormItem label="请求路径" prop="path" v-if="menuForm.type===1">
               <Tooltip
                 placement="right"
@@ -249,7 +252,7 @@
       return {
         loading: true,
         /*默认展开级别*/
-        expandLevel: 3,
+        expandLevel: 2,
         menuModalVisible: false,
         iconModalVisible: false,
         selectList: [],
@@ -267,6 +270,7 @@
           id: '',
           name: '',
           path: '',
+          url: '',
           component: '',
           title: '',
           icon: '',
@@ -691,6 +695,7 @@
         if(data.type!==1){
           const children = data.children || []
           children.push({
+            id:'0',
             name: '新增菜单(临时)',
             title: '新增菜单(临时)',
             expand: true,
@@ -709,6 +714,7 @@
         if (data.type === 0 && data.level !== 0) {
           const children = data.children || []
           children.push({
+            id:'0',
             title: '新增按钮(临时)',
             level: data.level + 1,
             expand: true,
