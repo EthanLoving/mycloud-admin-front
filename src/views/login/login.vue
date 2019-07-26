@@ -27,9 +27,9 @@
       return {
         vedioCanPlay: false,
         fixStyle: '',
-        PATH_TO_MP4: '',
+        PATH_TO_MP4: 'https://hswe.oss-cn-beijing.aliyuncs.com/mycloud-admin/201907261626-5c6089341e5241f8b73b4caa81e9a40f.mp4?Expires=4717729597&OSSAccessKeyId=LTAIG3y86uEF0V8Q&Signature=ih%2Fk5SLQcX5%2BjgaQvEQ132wO9YQ%3D',
         PATH_TO_WEBM: '',
-        PATH_TO_JPEG: 'http://pic.netbian.com/uploads/allimg/190510/221228-15574975489aa1.jpg'
+        PATH_TO_JPEG: ''
       }
     },
     methods: {
