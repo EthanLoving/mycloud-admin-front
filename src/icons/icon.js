@@ -1451,7 +1451,7 @@ export const icons = [
     ],
     "tags": [
       "grid",
-      "menu"
+      "index.vue"
     ]
   },
   {
@@ -1862,7 +1862,7 @@ export const icons = [
       "md-menu"
     ],
     "tags": [
-      "menu"
+      "index.vue"
     ]
   },
   {

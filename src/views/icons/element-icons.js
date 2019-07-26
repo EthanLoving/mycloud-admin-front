@@ -46,7 +46,7 @@ const elementIcons = [
   'mobile-phone',
   'service',
   'view',
-  'menu',
+  'index.vue',
   'more',
   'more-outline',
   'star-on',

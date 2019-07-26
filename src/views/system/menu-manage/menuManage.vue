@@ -108,12 +108,12 @@
                 </Tooltip>
               </FormItem>
               <FormItem label="图标" prop="icon">
-                                <Input
-                                  :icon="menuForm.icon"
-                                  placeholder="请选择选择图标"
-                                  v-model="menuForm.icon"
-                                  @on-focus="showEditIcon(0)"
-                                  style="width:400px"/>
+                <Input
+                  :icon="menuForm.icon"
+                  placeholder="请选择选择图标"
+                  v-model="menuForm.icon"
+                  @on-focus="showEditIcon(0)"
+                  style="width:400px"/>
               </FormItem>
               <FormItem label="前端组件" prop="component">
                 <Input v-model="menuForm.component" style="width:400px"/>
@@ -202,7 +202,8 @@
             </Tooltip>
           </FormItem>
           <FormItem label="图标" prop="icon">
-              <Input :icon="menuFormAdd.icon" placeholder="点击选择图标" v-model="menuFormAdd.icon" @on-focus="showEditIcon(1)"/>
+            <Input :icon="menuFormAdd.icon" placeholder="点击选择图标" v-model="menuFormAdd.icon"
+                   @on-focus="showEditIcon(1)"/>
           </FormItem>
           <FormItem label="前端组件" prop="component">
             <Input v-model="menuFormAdd.component"/>
@@ -228,6 +229,7 @@
       <!--<icon-choose @on-select="handleSelectIcon"></icon-choose>-->
       <IconChoose @on-select="handleSelectIcon"></IconChoose>
     </Modal>
+    <BackTop></BackTop>
   </div>
 </template>
 
@@ -692,10 +694,10 @@
         ])
       },
       appendMenu(data) {
-        if(data.type!==1){
+        if (data.type !== 1) {
           const children = data.children || []
           children.push({
-            id:'0',
+            id: '0',
             name: '新增菜单(临时)',
             title: '新增菜单(临时)',
             expand: true,
@@ -703,7 +705,7 @@
             type: 0
           })
           this.$set(data, 'children', children)
-        }else{
+        } else {
           this.$Message.info('按钮下不允许新增菜单')
         }
 
@@ -714,7 +716,7 @@
         if (data.type === 0 && data.level !== 0) {
           const children = data.children || []
           children.push({
-            id:'0',
+            id: '0',
             title: '新增按钮(临时)',
             level: data.level + 1,
             expand: true,

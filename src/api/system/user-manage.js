@@ -5,8 +5,8 @@ import { deleteRequest, getRequest, postRequest } from '../../utils/request'
 import { userApi } from '../../config/env'
 
 // 分页列表查询
-export function getUserListPage(data) {
-  return getRequest(userApi + '/account/page', data)
+export function getUserListPage(current,size,param) {
+  return getRequest(userApi + `/account/pages/${current}/${size}`, param)
 }
 
 // 获取用户列表数据

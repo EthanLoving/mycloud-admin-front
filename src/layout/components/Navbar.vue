@@ -6,13 +6,15 @@
 
     <div class="right-menu">
       <template v-if="device!=='mobile'">
+        <head-menu class="right-menu-item"></head-menu>
+        <!--顶部搜索-->
         <search id="header-search" class="right-menu-item" />
-
+        <!--错误日志-->
         <error-log class="errLog-container right-menu-item hover-effect" />
-
+        <!--全屏-->
         <screenfull id="screenfull" class="right-menu-item hover-effect" />
-
-        <el-tooltip content="Global Size" effect="dark" placement="bottom">
+        <!---->
+        <el-tooltip content="全局字体尺寸" effect="dark" placement="bottom">
           <size-select id="size-select" class="right-menu-item hover-effect" />
         </el-tooltip>
 
@@ -50,6 +52,7 @@ import ErrorLog from '@/components/ErrorLog'
 import Screenfull from '@/components/Screenfull'
 import SizeSelect from '@/components/SizeSelect'
 import Search from '@/components/HeaderSearch'
+import HeadMenu from '@/components/HeadMenu'
 
 export default {
   components: {
@@ -58,7 +61,8 @@ export default {
     ErrorLog,
     Screenfull,
     SizeSelect,
-    Search
+    Search,
+    HeadMenu
   },
   computed: {
     ...mapGetters([
