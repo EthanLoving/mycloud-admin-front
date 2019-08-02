@@ -7,13 +7,13 @@
       <Row>
         <Form :model="searchFrom" ref="searchFrom" :label-width="60" inline>
           <FormItem label="用户名:" prop="username">
-            <Input type="text" v-model="searchFrom.username" placeholder="请输入用户名" clearable></Input>
+            <Input type="text" v-model="searchFrom.username" placeholder="请输入用户名" :clearable="true"></Input>
           </FormItem>
           <FormItem label="手机号:" prop="phone">
-            <Input v-model="searchFrom.phone" placeholder="请输入手机号" clearable="true" number></Input>
+            <Input v-model="searchFrom.phone" placeholder="请输入手机号" number></Input>
           </FormItem>
           <FormItem label="邮箱:" prop="email">
-            <Input v-model="searchFrom.email" clearable="true" placeholder="请输入邮箱"></Input>
+            <Input v-model="searchFrom.email" placeholder="请输入邮箱"></Input>
           </FormItem>
           <FormItem label="性别:" prop="gender">
             <Select v-model="searchFrom.gender">
@@ -707,6 +707,7 @@
       /* 查询用户列表*/
       getUserList() {
         getUserListPage(this.current,this.size,this.searchFrom).then(res => {
+          console.log(111)
           this.current = res.data.current
           this.total = res.data.total
           const data = res.data.records
@@ -813,7 +814,6 @@
       this.uploadFileAction = uploadFileAction
       this.init()
       this.getRolesList()
-      console.log(uploadFileAction)
     }
   }
 </script>
