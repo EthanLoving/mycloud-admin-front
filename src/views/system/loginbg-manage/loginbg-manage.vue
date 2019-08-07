@@ -16,7 +16,7 @@
       title="新增背景"
       :closable="false"
       :mask-closable="false"
-      :loading="true"
+      :loading="addLoading"
       width="1000px"
       @on-ok="submitUpload()"
     >
@@ -55,7 +55,7 @@
           <Col span="8">
             <Card :padding="0" style="width:320px;height:320px;">
               <div style="text-align:center">
-                <img :src=this.bgForm.bgImg>
+                <img width="320px" height="320px" :src=this.bgForm.bgImg>
               </div>
             </Card>
             <Upload :action=this.uploadFileAction :on-success="imgSeccess">
@@ -86,12 +86,13 @@
 
 <script>
   import { uploadFileAction } from '@/api/index'
-
+  import { getAllBgList,saveBg } from '@/api/system/loginbg-manage'
   export default {
     props: {},
     data() {
       return {
         bgAddModal: false,
+        addLoading: false,
         uploadFileAction: '',
         videoShow: false,
         webmShow: false,
@@ -115,12 +116,24 @@
       }
     },
     methods: {
+      init(){
+        this.getBgList()
+      },
+      getBgList(){
+        getAllBgList().then(res => {
+          console.log(res);
+        });
+      },
       handleSetBg() {
         this.bgAddModal = true
       },
 
       submitUpload() {
-        console.log(this.bgForm)
+        this.addLoading = true
+        saveBg(this.bgForm).then(res=>{
+          this.$Message.success(res.message);
+          this.addLoading = false;
+        });
       },
       async videoSeccess(res, file, fileList) {
         console.log('video成功==>', res)
@@ -151,6 +164,7 @@
     },
     mounted() {
       this.uploadFileAction = uploadFileAction
+      this.init()
     }
   }
 </script>
