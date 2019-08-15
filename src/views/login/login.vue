@@ -7,11 +7,11 @@
       <video :style="fixStyle" autoplay loop class="fillWidth" v-on:canplay="canplay">
         <source :src="PATH_TO_MP4" type="video/mp4"/>
         浏览器不支持 video 标签，建议升级浏览器。
-        <source src="PATH_TO_WEBM" type="video/webm"/>
+        <source :src="PATH_TO_WEBM" type="video/webm"/>
         浏览器不支持 video 标签，建议升级浏览器。
       </video>
       <div class="poster hidden" v-if="!vedioCanPlay">
-        <img :style="fixStyle" src="./bgvideo/Stop-Sign.jpg" alt="">
+        <img :style="fixStyle" :src="PATH_TO_JPEG" alt="">
       </div>
     </div>
   </div>
@@ -19,6 +19,8 @@
 
 <script>
   import loginWidget from './loginWidget'
+  import { getLoginBg } from '@/api/index'
+  import { get,put} from '@/utils/cache'
 
   export default {
     name: 'mylogin',
@@ -27,15 +29,31 @@
       return {
         vedioCanPlay: false,
         fixStyle: '',
-        PATH_TO_MP4: 'https://hswe.oss-cn-beijing.aliyuncs.com/mycloud-admin/201907261626-5c6089341e5241f8b73b4caa81e9a40f.mp4?Expires=4717729597&OSSAccessKeyId=LTAIG3y86uEF0V8Q&Signature=ih%2Fk5SLQcX5%2BjgaQvEQ132wO9YQ%3D',
+        PATH_TO_MP4: '',
         PATH_TO_WEBM: '',
         PATH_TO_JPEG: ''
       }
     },
     methods: {
+      async loginBg(){
+        await getLoginBg().then(res => {
+          put("bgVideo",res.data.bgVideo)
+          put("bgWebm",res.data.bgWebm)
+          put("bgImg",res.data.bgImg)
+        })
+      },
+      init() {
+        this.PATH_TO_MP4 = get("bgVideo")
+        this.PATH_TO_WEBM = get("bgWebm")
+        this.PATH_TO_JPEG = get("bgImg")
+        this.canplay()
+      },
       canplay() {
         this.vedioCanPlay = true
       }
+    },
+    created: function() {
+      this.loginBg()
     },
     mounted: function() {
       window.onresize = () => {
@@ -65,6 +83,7 @@
         }
       }
       window.onresize()
+      this.init()
     }
   }
 </script>

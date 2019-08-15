@@ -10,4 +10,8 @@ export function getAllBgList(param) {
 export function saveBg(param) {
   return postRequest(userApi + `/sysLoginConfig/add`, param)
 }
+// 新增
+export function setBg(id) {
+  return postRequest(userApi + `/sysLoginConfig/set/${id}`)
+}
 

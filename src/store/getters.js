@@ -12,6 +12,9 @@ const getters = {
   permissionRouters: state => state.permission.routers,
   addRouters: state => state.permission.addRouters,
   browserHeaderTitle: state => state.user.browserHeaderTitle,
-  errorLogs: state => state.errorLog.logs
+  errorLogs: state => state.errorLog.logs,
+  bgVideo: state => state.loginBg.bgVideo,
+  bgWebm: state => state.loginBg.bgWebm,
+  bgImg: state => state.loginBg.bgImg
 }
 export default getters

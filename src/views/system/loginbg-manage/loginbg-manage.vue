@@ -10,6 +10,26 @@
           <Button type="primary" icon="ios-add" @click="handleSetBg()">新增背景</Button>
         </Col>
       </Row>
+      <Card :bordered="false">
+        <ul class="listul">
+          <Row v-for="item in dataList">
+            <li>
+              <Col span="8">
+                <video autoplay loop class="video">
+                  <source :src="item.bgVideo" type="video/mp4"/>
+                  浏览器不支持 video 标签，建议升级浏览器。
+                </video>
+              </Col>
+              <Col span="8">
+                <img width="400px" height="300px" :src="item.bgImg">
+              </Col>
+              <Col span="8" style="text-align: center;">
+                <Button type="success" @click="setBg(item.id)">设置为背景</Button>
+              </Col>
+            </li>
+          </Row>
+        </ul>
+      </Card>
     </Card>
     <Modal
       v-model="bgAddModal"
@@ -20,16 +40,15 @@
       width="1000px"
       @on-ok="submitUpload()"
     >
-      <Form :model="bgForm" style="text-align: center;">
-        <Row>
+      <Row>
+        <Form ref="bgForm" :model="bgForm" style="text-align: center;">
           <Col span="8">
-            <Card :padding="0" style="width:320px;height:320px;">
-              <div style="text-align:center">
-                <video autoplay loop :v-show=this.videoShow class="video">
-                  <source :src="this.bgForm.bgVideo" type="video/mp4"/>
-                  您的浏览器不支持 video 视屏播放。
-                </video>
-              </div>
+            <Card :padding="0" style="width:320px;height:320px;" :dis-hover="true">
+              <video autoplay loop :v-show=this.videoShow class="video">
+                <source :src="this.bgForm.bgVideo" type="video/mp4"/>
+                您的浏览器不支持 video 视屏播放。
+              </video>
+
             </Card>
             <Upload :action=this.uploadFileAction
                     :on-success="videoSeccess"
@@ -63,34 +82,21 @@
               <Button icon="ios-cloud-upload-outline">上传图片</Button>
             </Upload>
           </Col>
-        </Row>
-      </Form>
-
-
-      <!--<Upload
-        multiple
-        type="drag"
-        :show-upload-list="true"
-        :headers='{"Authorization": session}'
-        :action=uploadFileAction
-        :on-success="uploadSeccess"
-      >
-        <div style="padding: 20px 0">
-          <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"/>
-          <p>点击此处上传文件</p>
-        </div>
-      </Upload>-->
+        </Form>
+      </Row>
     </Modal>
   </div>
 </template>
 
 <script>
   import { uploadFileAction } from '@/api/index'
-  import { getAllBgList,saveBg } from '@/api/system/loginbg-manage'
+  import { getAllBgList, saveBg, setBg } from '@/api/system/loginbg-manage'
+
   export default {
     props: {},
     data() {
       return {
+        dataList: [],
         bgAddModal: false,
         addLoading: false,
         uploadFileAction: '',
@@ -116,24 +122,26 @@
       }
     },
     methods: {
-      init(){
+      init() {
         this.getBgList()
       },
-      getBgList(){
+      getBgList() {
         getAllBgList().then(res => {
-          console.log(res);
-        });
+          this.dataList = res.data
+        })
       },
       handleSetBg() {
         this.bgAddModal = true
+        this.$refs.bgForm.resetFields();
       },
 
       submitUpload() {
         this.addLoading = true
-        saveBg(this.bgForm).then(res=>{
-          this.$Message.success(res.message);
-          this.addLoading = false;
-        });
+        saveBg(this.bgForm).then(res => {
+          this.$Message.success(res.message)
+          this.addLoading = false
+          this.init()
+        })
       },
       async videoSeccess(res, file, fileList) {
         console.log('video成功==>', res)
@@ -148,18 +156,27 @@
         console.log('img成功==>', res)
         this.bgForm.bgImg = res.data
       },
-      handleVideoFormatError (file) {
+      handleVideoFormatError(file) {
         this.$Notice.error({
           title: '文件格式不正确',
           desc: '文件 ' + file.name + ' 格式不正确，请上传mp4格式的视频。'
         })
       },
-      handleMaxSize (file) {
+      handleMaxSize(file) {
         this.$Notice.warning({
           title: '超出文件大小限制',
           desc: '文件 ' + file.name + ' 太大，不能超过 2M。'
         })
       },
+      setBg(id) {
+        setBg(id).then(res => {
+          if (res.code === '5200') {
+            this.$Message.success('设置成功')
+          }
+        }).catch(err => {
+          reject(err.data)
+        })
+      }
 
     },
     mounted() {
