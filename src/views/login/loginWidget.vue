@@ -30,8 +30,23 @@
             autocomplete="off"
             @keyup.enter.native="handleLogin"/>
         </FormItem>
+        <FormItem prop="verifyCode">
+          <Input
+            style="width: 200px"
+            v-model="loginForm.verifyCode"
+            type="text"
+            prefix="ios-code"
+            size="large"
+            clearable
+            placeholder="请输入验证码"
+            autocomplete="off"
+            @keyup.enter.native="handleLogin"/>
+        </FormItem>
         <FormItem>
           <Button type="primary" long :loading="loading" @click="handleLogin">登录</Button>
+        </FormItem>
+        <FormItem>
+          <Button type="success" long @click="handleRegist">注册</Button>
         </FormItem>
         <div id="tips">
           <span v-if="IsNormal==='待获取'">服务器状态：<span :style="{'font-weight':'bold'}">待获取</span></span>
@@ -84,7 +99,8 @@
         IsNormal: '待获取',
         loginForm: {
           username: 'admin',
-          password: '123456'
+          password: '123456',
+          verifyCode: ''
         },
         loginRules: {
           username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -130,21 +146,6 @@
             return false
           }
         })
-        // TODO
-        // this.$refs.loginForm.validate(valid => {
-        //   if (valid) {
-        //     this.loading = true
-        //     this.$store.dispatch('Login', this.loginForm).then(() => {
-        //       this.loading = false
-        //       console.log(this.$router.options.routes)
-        //       this.$router.push({ path: '/' })
-        //     }).catch(() => {
-        //       this.loading = false
-        //     })
-        //   } else {
-        //     return false
-        //   }
-        // })
       },
       // 服务器可接入测试
       serverAttachTest() {
@@ -157,6 +158,10 @@
         }).catch(error => {
           touchError(this, this.serverAttachTest, error)
         })
+      },
+      handleRegist(){
+        console.log(1)
+        this.$router.push({ path: '/regist' })
       }
     }
   }
