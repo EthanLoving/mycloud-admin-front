@@ -62,17 +62,6 @@ const permission = {
         otherRoutes.forEach(o=>{
           accessedRouters.push(o);
         })
-        // if (role.indexOf('admin') >= 0) {
-        //   console.log('admin>=0')
-        //   accessedRouters = asyncRouterMap
-        // } else {
-        //   console.log('admin<0')
-        //   accessedRouters = filterAsyncRouter(asyncRouterMap, role)
-        //   // accessedRouters = ''
-        //   // accessedRouters = asyncRouterMap
-        // }
-        //bisnewRouters = formatRoutes(getMenus())
-
         let permissions = filterAsyncRouter(accessedRouters)
         commit('SET_ROUTERS', permissions)
         resolve()

@@ -1,4 +1,5 @@
 
+import Layout from '@/layout'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -47,7 +48,7 @@ export const otherRouter = {
   path: '/',
   name: 'otherRouter',
   redirect: '/home',
-  component: layout,
+  component: Layout,
 
 }
 /**
