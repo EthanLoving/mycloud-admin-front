@@ -37,9 +37,8 @@
             type="TencentCaptcha"
             :parm="captchaOption"
             @callback="captchaNotice"
-            url="http://localhost:8443/verify"
+            url="http://localhost:8443/auth/verify/captcha"
           >
-<!--            <Button id="Captcha" type="primary" long :loading="loading" @click="handleLogin">登录</Button>-->
             <Button id="Captcha" type="primary" long :loading="loading">登录</Button>
           </Captcha>
         </FormItem>
@@ -103,8 +102,8 @@
         loginForm: {
           username: 'admin',
           password: '123456',
-          verifyCode: ''
         },
+        captchaFlag:'0',
         loginRules: {
           username: [{ required: true, trigger: 'blur', validator: validateUsername }],
           password: [{ required: true, trigger: 'blur', validator: validatePassword }]
@@ -170,20 +169,29 @@
           touchError(this, this.serverAttachTest, error)
         })
       },
-      callback(res) {
-        console.log('111111111111' + res)
-        // res（用户主动关闭验证码）= {ret: 2, ticket: null}
-        // res（验证成功） = {ret: 0, ticket: "String", randstr: "String"}
-        if (res.ret === 0) {
-          alert(res.ticket)   // 票据
-        }
-      },
       // 回调监听
       // status: 1成功,2验证中,0失败
       // res: 三方返回的原始数据
       captchaNotice(status, res){
-        console.log(status)
+        console.log("是否成功"+status)
         console.log(res)
+        if(res.code==='5200'){
+          this.loading = true
+          this.$refs.loginForm.validate(valid => {
+            if (valid) {
+              this.loading = true
+              this.$store.dispatch('Login', this.loginForm).then(() => {
+                this.loading = false
+                this.$router.push({ path: '/' })
+              }).catch(() => {
+                this.loading = false
+              })
+            } else {
+              console.log('登陆提交异常!!')
+              return false
+            }
+          })
+        }
       }
     }
   }
