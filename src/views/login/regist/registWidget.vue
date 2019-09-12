@@ -33,6 +33,9 @@
         <FormItem>
           <Button type="success" long :loading="loading" @click="handleLogin">注册</Button>
         </FormItem>
+        <div>
+          <a href="login">返回</a>
+        </div>
       </Form>
     </div>
     <div class="hold-space-div"/>
