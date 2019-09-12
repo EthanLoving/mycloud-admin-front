@@ -30,24 +30,27 @@
             autocomplete="off"
             @keyup.enter.native="handleLogin"/>
         </FormItem>
-        <FormItem prop="verifyCode">
-          <Input
-            style="width: 200px"
-            v-model="loginForm.verifyCode"
-            type="text"
-            prefix="ios-code"
-            size="large"
-            clearable
-            placeholder="请输入验证码"
-            autocomplete="off"
-            @keyup.enter.native="handleLogin"/>
-        </FormItem>
         <FormItem>
-          <Button type="primary" long :loading="loading" @click="handleLogin">登录</Button>
+          <Captcha
+            id="Captcha"
+            scene="Login"
+            type="TencentCaptcha"
+            :parm="captchaOption"
+            @callback="captchaNotice"
+            url="http://localhost:8443/verify"
+          >
+<!--            <Button id="Captcha" type="primary" long :loading="loading" @click="handleLogin">登录</Button>-->
+            <Button id="Captcha" type="primary" long :loading="loading">登录</Button>
+          </Captcha>
         </FormItem>
-        <FormItem>
-          <Button type="success" long @click="handleRegist">注册</Button>
-        </FormItem>
+        <div id="login_reg">
+          <span>
+            其他方式登陆
+          </span>
+          <span>
+            <a href="regist">注册账户</a>
+          </span>
+        </div>
         <div id="tips">
           <span v-if="IsNormal==='待获取'">服务器状态：<span :style="{'font-weight':'bold'}">待获取</span></span>
           <span v-else-if="IsNormal">服务器状态：<span :style="{color:'#00ff00', 'font-weight':'bold'}">正常</span></span>
@@ -106,7 +109,14 @@
           username: [{ required: true, trigger: 'blur', validator: validateUsername }],
           password: [{ required: true, trigger: 'blur', validator: validatePassword }]
         },
-        pwdType: 'password'
+        pwdType: 'password',
+        captchaOption: {
+          // 各平台的参数，具体请参阅个平台文档
+          // 以下为腾讯验证码的参数
+          appid: '2084090782',
+          // 以下为极验验证码的参数
+          //product: 'bind',
+        }
       }
     },
     computed: {
@@ -121,6 +131,7 @@
     mounted: function() {
       this.elegantSentences = chooseElegantSentencesLogin()
       setTimer(this.serverAttachTest, 1000)
+
     },
     methods: {
       showPwd() {
@@ -131,16 +142,16 @@
         }
       },
       handleLogin() {
-        this.loading = true;
+        this.loading = true
         this.$refs.loginForm.validate(valid => {
           if (valid) {
             this.loading = true
             this.$store.dispatch('Login', this.loginForm).then(() => {
               this.loading = false
               this.$router.push({ path: '/' })
-              }).catch(() => {
-                this.loading = false
-              })
+            }).catch(() => {
+              this.loading = false
+            })
           } else {
             console.log('登陆提交异常!!')
             return false
@@ -159,9 +170,20 @@
           touchError(this, this.serverAttachTest, error)
         })
       },
-      handleRegist(){
-        console.log(1)
-        this.$router.push({ path: '/regist' })
+      callback(res) {
+        console.log('111111111111' + res)
+        // res（用户主动关闭验证码）= {ret: 2, ticket: null}
+        // res（验证成功） = {ret: 0, ticket: "String", randstr: "String"}
+        if (res.ret === 0) {
+          alert(res.ticket)   // 票据
+        }
+      },
+      // 回调监听
+      // status: 1成功,2验证中,0失败
+      // res: 三方返回的原始数据
+      captchaNotice(status, res){
+        console.log(status)
+        console.log(res)
       }
     }
   }

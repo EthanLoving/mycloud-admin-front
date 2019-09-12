@@ -42,7 +42,8 @@ Object.keys(filters).forEach(key => {
 //   duration:3                                   //设置3秒后消失
 // });
 Vue.config.productionTip = false
-
+import captcha from 'vue-social-captcha'
+Vue.use(captcha)
 new Vue({
   el: '#app',
   router,
