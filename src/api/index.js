@@ -1,5 +1,5 @@
 import { getRequest, postRequest } from '../utils/request'
-import { userApi } from '@/config/env'
+import { baseUrl,userApi } from '@/config/env'
 //ping 后端
 export function serverAttach() {
   return getRequest('route/test')
@@ -30,4 +30,5 @@ export function loadDepts(id) {
 export function searchDept(deptName) {
   return postRequest(userApi + '/dept/search', deptName)
 }
-export const uploadFileAction = 'http://10.1.70.57:9008/upload/file'
+export const uploadFileAction = 'http://10.1.79.82:9008/upload/file'
+export const verifyCaptchaUrl = baseUrl+'auth/verify/captcha'

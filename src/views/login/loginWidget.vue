@@ -37,7 +37,7 @@
             type="TencentCaptcha"
             :parm="captchaOption"
             @callback="captchaNotice"
-            url="http://localhost:8443/auth/verify/captcha"
+            :url=this.verifyCaptchaUrl
           >
             <Button id="Captcha" type="primary" long :loading="loading">登录</Button>
           </Captcha>
@@ -74,7 +74,7 @@
   import { isvalidUsernameOrPassword } from '@/utils/validate'
   import { setTimer, touchError } from '@/utils/timer'
   import { chooseElegantSentencesLogin } from '@/utils/chooseElegantSentences'
-  import { serverAttach } from '@/api/index'
+  import { verifyCaptchaUrl,serverAttach } from '@/api/index'
 
   export default {
     name: 'LoginWidget',
@@ -115,7 +115,8 @@
           appid: '2084090782',
           // 以下为极验验证码的参数
           //product: 'bind',
-        }
+        },
+        verifyCaptchaUrl:'',
       }
     },
     computed: {
@@ -128,6 +129,7 @@
       }
     },
     mounted: function() {
+      this.verifyCaptchaUrl = verifyCaptchaUrl
       this.elegantSentences = chooseElegantSentencesLogin()
       setTimer(this.serverAttachTest, 1000)
 
