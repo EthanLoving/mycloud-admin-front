@@ -20,6 +20,6 @@ export function getDictDataByType(data) {
 export function searchPermission(data) {
   return getRequest(userApi + '/menus/search', data)
 }
-export function deletePermission(data) {
-  return deleteRequest(userApi + `/menus/del/${id}`, data)
+export function deletePermission(id) {
+  return deleteRequest(userApi + `/menus/del/${id}`)
 }

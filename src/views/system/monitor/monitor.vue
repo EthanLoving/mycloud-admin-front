@@ -61,7 +61,7 @@
       methods: {
         initUrl() {
           console.log(this.$route);
-          let url = this.$route.meta.url;
+          let url = this.$route.path;
           if (url !== null && url !== undefined) {
             this.url = url;
             this.go = url;

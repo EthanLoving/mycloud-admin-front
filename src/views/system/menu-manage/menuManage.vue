@@ -46,7 +46,7 @@
           </div>
           <Spin size="large" fix v-if="loading"></Spin>
         </Col>
-        <!--新增表单-->
+        <!--新增/编辑表单-->
         <Col span="9">
           <Form ref="menuForm" :model="menuForm" :label-width="85" :rules="menuFormValidate">
             <FormItem label="类型" prop="type">
@@ -61,26 +61,62 @@
                 </Radio>
               </RadioGroup>
             </FormItem>
-            <FormItem label="名称" prop="title" v-if="menuForm.type===0">
-              <Input v-model="menuForm.name" style="width:400px"/>
+            <div v-if="menuForm.type===0">
+              <FormItem label="菜单名称" prop="title">
+                <Tooltip trigger="focus" placement="right" content="设置该路由在侧边栏和面包屑中展示的名字">
+                  <Input v-model="menuForm.title" style="width:400px"/>
+                </Tooltip>
+              </FormItem>
+              <FormItem label="图标" prop="icon">
+                <Tooltip
+                  placement="right"
+                  :max-width="230"
+                  transfer
+                  content="设置该路由的图标"
+                >
+                  <Input
+                    :icon="menuForm.icon"
+                    placeholder="请选择选择图标"
+                    v-model="menuForm.icon"
+                    @on-focus="showEditIcon(0)"
+                    style="width:400px"/>
+                </Tooltip>
+              </FormItem>
+              <FormItem label="前端组件" prop="component">
+                <Tooltip
+                  placement="right"
+                  :max-width="230"
+                  transfer
+                  content="组件地址，前端动态加载,vue默认加载@/views/xxxxxx"
+                >
+                  <Input v-model="menuForm.component" placeholder="例如:/system/monitor/monitor" style="width:400px"/>
+                </Tooltip>
+              </FormItem>
+            </div>
+            <FormItem label="路径" prop="path" v-if="menuForm.type===0">
+              <Tooltip
+                placement="right"
+                :max-width="230"
+                transfer
+                content="访问此路由的路径，根据什么路径找此页面"
+              >
+                <Input v-model="menuForm.path" style="width:400px"/>
+              </Tooltip>
             </FormItem>
+            <!--菜单结束-->
+
+            <!--按钮 开始-->
             <FormItem label="名称" prop="name" v-if="menuForm.type===1">
               <Tooltip placement="right" content="操作按钮名称不得重复">
                 <Input v-model="menuForm.name" style="width:400px"/>
               </Tooltip>
-            </FormItem>
-            <FormItem label="路径" prop="path" v-if="menuForm.type===0">
-              <Input v-model="menuForm.path" style="width:400px"/>
-            </FormItem>
-            <FormItem label="请求url" prop="url" v-if="menuForm.type===0">
-              <Input v-model="menuForm.url" style="width:400px"/>
             </FormItem>
             <FormItem label="请求路径" prop="path" v-if="menuForm.type===1">
               <Tooltip
                 placement="right"
                 :max-width="230"
                 transfer
-                content="填写后台请求URL，后台将作权限拦截，若无可填写'无'或其他"
+                content="填写后台请求URL，类似:  /user/add"
               >
                 <Input v-model="menuForm.path" style="width:400px"/>
               </Tooltip>
@@ -94,31 +130,16 @@
                 style="width:400px"
               >
                 <Option
-                  v-for="(item, i) in dcitPermissions"
+                  v-for="(item, i) in dictPermissions"
                   :key="i"
                   :value="item.val"
                 >{{item.title}}
                 </Option>
               </Select>
             </FormItem>
-            <div v-if="menuForm.type===0">
-              <FormItem label="菜单名称" prop="title">
-                <Tooltip trigger="focus" placement="right" content="需唯一">
-                  <Input v-model="menuForm.title" style="width:400px"/>
-                </Tooltip>
-              </FormItem>
-              <FormItem label="图标" prop="icon">
-                <Input
-                  :icon="menuForm.icon"
-                  placeholder="请选择选择图标"
-                  v-model="menuForm.icon"
-                  @on-focus="showEditIcon(0)"
-                  style="width:400px"/>
-              </FormItem>
-              <FormItem label="前端组件" prop="component">
-                <Input v-model="menuForm.component" style="width:400px"/>
-              </FormItem>
-            </div>
+            <!--按钮 结束-->
+
+            <!--公共字段开始-->
             <FormItem label="排序值" prop="sort">
               <InputNumber :max="1000" :min="0" v-model="menuForm.sort"></InputNumber>
               <span style="margin-left:5px">值越小越靠前，支持小数</span>
@@ -144,7 +165,7 @@
         </Col>
       </Row>
     </Card>
-
+    <!--添加子节点/添加一级菜单 弹框-->
     <Modal
       draggable
       :title="modalTitle"
@@ -153,7 +174,7 @@
       :width="500"
       :styles="{top: '30px'}"
     >
-      <Form ref="menuFormAdd" :model="menuFormAdd" :label-width="85" :rules="menuFormValidate">
+      <Form ref="menuFormAdd" :model="menuFormAdd" :label-width="100" :rules="menuFormValidate">
         <div v-if="showParent">
           <FormItem label="上级节点：">{{parentTitle}}</FormItem>
         </div>
@@ -169,47 +190,63 @@
             </Radio>
           </RadioGroup>
         </FormItem>
-        <FormItem label="菜单中文名" prop="name" v-if="menuFormAdd.type===0">
-          <Input v-model="menuFormAdd.name" placeholder="菜单英文名称"/>
-        </FormItem>
-        <FormItem label="名称" prop="name" v-if="menuFormAdd.type===1">
-          <Tooltip trigger="focus" placement="right" content="操作按钮名称不得重复">
-            <Input v-model="menuFormAdd.name" style="width:380px"/>
+        <!--菜单属性 开始-->
+        <FormItem label="菜单名称" prop="name" v-if="menuFormAdd.type===0">
+          <Tooltip trigger="focus" placement="right" content="设置该路由在侧边栏和面包屑中展示的名字">
+            <Input v-model="menuFormAdd.name" placeholder="请输入菜单名称"/>
           </Tooltip>
         </FormItem>
-        <FormItem label="路径" prop="path" v-if="menuFormAdd.type===0">
-          <Input v-model="menuFormAdd.path"/>
-        </FormItem>
-        <FormItem label="请求路径" prop="path" v-if="menuFormAdd.type===1">
+        <div v-if="menuFormAdd.type===0">
+          <FormItem label="图标" prop="icon">
+            <Input :icon="menuFormAdd.icon" placeholder="点击选择图标" v-model="menuFormAdd.icon"
+                   @on-focus="showEditIcon(1)"/>
+          </FormItem>
+          <FormItem label="前端组件" prop="component">
+            <Tooltip
+              placement="right"
+              :max-width="230"
+              transfer
+              content="组件地址，前端动态加载,vue默认加载@/views/xxxxxx"
+            >
+              <Input v-model="menuFormAdd.component" placeholder="/system/monitor/monitor"/>
+            </Tooltip>
+          </FormItem>
+        </div>
+        <FormItem label="菜单路径" prop="path" v-if="menuFormAdd.type===0">
           <Tooltip
             placement="right"
             :max-width="230"
             transfer
-            content="填写后台请求URL，后台将作权限拦截，若无可填写'无'或其他"
+            content="访问此路由的路径，根据什么路径找此页面"
+          >
+            <Input v-model="menuFormAdd.path"/>
+          </Tooltip>
+        </FormItem>
+        <!--菜单属性 结束-->
+        <!--按钮属性开始-->
+        <FormItem label="按钮名称" prop="name" v-if="menuFormAdd.type===1">
+          <Tooltip trigger="focus" placement="right" content="操作按钮名称不得重复">
+            <Input v-model="menuFormAdd.name" style="width:380px"/>
+          </Tooltip>
+        </FormItem>
+        <FormItem label="按钮请求路径" prop="path" v-if="menuFormAdd.type===1">
+          <Tooltip
+            placement="right"
+            :max-width="230"
+            transfer
+            content="填写后台Controller的Mapping，后台将作权限拦截"
           >
             <Input v-model="menuFormAdd.path" style="width:380px"/>
           </Tooltip>
         </FormItem>
         <FormItem label="按钮权限类型" prop="btnType" v-if="menuFormAdd.type===1">
           <Select v-model="menuFormAdd.btnType" placeholder="请选择或输入搜索" filterable clearable>
-            <Option v-for="(item, i) in dcitPermissions" :key="i" :value="item.val">{{item.title}}</Option>
+            <Option v-for="(item, i) in dictPermissions" :key="i" :value="item.val">{{item.title}}</Option>
           </Select>
         </FormItem>
-        <div v-if="menuFormAdd.type===0">
-          <FormItem label="菜单英文名" prop="name">
-            <Tooltip trigger="focus" placement="right" content="需唯一">
-              <Input v-model="menuFormAdd.title" style="width:380px"/>
-            </Tooltip>
-          </FormItem>
-          <FormItem label="图标" prop="icon">
-            <Input :icon="menuFormAdd.icon" placeholder="点击选择图标" v-model="menuFormAdd.icon"
-                   @on-focus="showEditIcon(1)"/>
-          </FormItem>
-          <FormItem label="前端组件" prop="component">
-            <Input v-model="menuFormAdd.component"/>
-          </FormItem>
-        </div>
-        <FormItem label="排序值" prop="sort">
+        <!--按钮属性 结束-->
+
+        <FormItem label="排序值" prop="sort" v-if="menuFormAdd.type===0">
           <InputNumber :max="1000" :min="0" v-model="menuFormAdd.sort"></InputNumber>
           <span style="margin-left:5px">值越小越靠前，支持小数</span>
         </FormItem>
@@ -272,7 +309,6 @@
           id: '',
           name: '',
           path: '',
-          url: '',
           component: '',
           title: '',
           icon: '',
@@ -283,10 +319,11 @@
           level: 0,
           enabled: 1
         },
+        //新增菜单form
         menuFormAdd: {
-          btnType: '',
+          name: '',
           icon: '',
-          name: ''
+          btnType: ''
         },
         menuFormValidate: {
           name: [{ required: true, message: '名称不能为空', trigger: 'blur' }],
@@ -299,7 +336,7 @@
         },
         submitLoading: false,
         data: [],
-        dcitPermissions: [],
+        dictPermissions: [],
         iconType: 0
       }
     },
@@ -311,7 +348,7 @@
       getDictPermissions() {
         getDictDataByType({ type: 'btns' }).then(res => {
           if (res.success) {
-            this.dcitPermissions = res.data
+            this.dictPermissions = res.data
           }
         })
       },
@@ -476,19 +513,15 @@
             if (this.menuFormAdd.sort === null) {
               this.menuFormAdd.sort = ''
             }
-            // if (this.menuFormAdd.btnType === null) {
-            //   this.menuFormAdd.btnType = ''
-            // }
             //如果是按钮
             if (this.menuFormAdd.type == 1) {
               this.menuFormAdd.title = ''
-              this.menuFormAdd.btnType = 0
               this.menuFormAdd.icon = ''
               this.menuFormAdd.component = ''
-              this.menuFormAdd.pattern = this.menuFormAdd.path
             } else {
               this.menuFormAdd.title = this.menuFormAdd.name
             }
+            console.log(this.menuFormAdd)
             addPermission(this.menuFormAdd).then(res => {
               this.submitLoading = false
               if (res.success === true) {
@@ -534,8 +567,8 @@
           parentId: this.menuForm.id,
           level: Number(this.menuForm.level) + 1,
           sort: 0,
-          btnType: 0,
-          enabled: 0
+          btnType: '0',
+          enabled: 1
         }
         this.menuModalVisible = true
       },
@@ -545,10 +578,10 @@
         this.isButtonAdd = false
         this.showParent = false
         this.menuFormAdd = {
+          parentId:'0',
           type: 0,
           level: 1,
-          sortOrder: 0,
-          status: 0
+          sort: 0
         }
         this.menuModalVisible = true
       },
