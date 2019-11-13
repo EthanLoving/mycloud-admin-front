@@ -39,8 +39,13 @@
           <Row>
             <Table
               :loading="loading"
+              :stripe=true
               border
               :columns="columns"
+              :disabled-hover=true
+              :highlight-row=true
+              no-data-text="当前没有数据"
+              no-filtered-data-text="筛选数据为空时显示的提示内容"
               sortable="custom"
               :data="data"
               @on-selection-change="showSelect"
@@ -152,10 +157,7 @@
         showAssign: false,
         searchForm: {
           // 搜索框对应data对象
-          t: {
-            name: ''
-
-          },
+          name: '',
           current: 1, // 当前页数
           size: 10 // 页面大小
         },
@@ -182,38 +184,31 @@
           // 表头
           {
             type: 'selection',
-            width: 60,
             align: 'center'
           },
           {
             type: 'index',
-            width: 60,
             align: 'center'
           },
           {
             title: '任务名称',
-            key: 'name',
-            width: 160
+            key: 'name'
           },
           {
             title: '所属流程',
-            key: 'processName',
-            width: 150
+            key: 'processName'
           },
           {
             title: '委托代办人',
-            key: 'owner',
-            width: 130
+            key: 'owner'
           },
           {
             title: '流程发起人',
-            key: 'applyer',
-            width: 130
+            key: 'applyer'
           },
           {
             title: '优先级',
             key: 'priority',
-            width: 100,
             sortable: true,
             render: (h, params) => {
               let text = '无',
@@ -249,7 +244,6 @@
             title: '状态',
             key: 'isSuspended',
             align: 'center',
-            width: 130,
             render: (h, params) => {
               let re = ''
               if (!params.row.isSuspended) {
@@ -302,7 +296,6 @@
           {
             title: '创建时间',
             key: 'createTime',
-            width: 150,
             sortType: 'desc',
             sortable: true
           },
@@ -419,9 +412,11 @@
         this.getDataList()
       },
       //批量通过
-      batchPass(){},
+      batchPass() {
+      },
       //批量驳回
-      batchBack(){},
+      batchBack() {
+      },
       getDictDataType() {
         getDictDataByType('priority').then(res => {
           if (res.success) {
@@ -488,7 +483,7 @@
           } else {
             this.error = ''
           }
-          console.log(this.form.assignee);
+          console.log(this.form.assignee)
           pass(this.form).then(res => {
             this.submitLoading = false
             if (res.success) {

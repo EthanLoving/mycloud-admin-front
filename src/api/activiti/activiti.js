@@ -23,7 +23,7 @@ export const deleteModel = (ids, params) => {
 
 /********************************发布管理*****************************************/
 export const getBusinessDataList = (data) =>{
-  return postRequest(actApi+`/business/page`,data)
+  return getRequest(actApi+`/business/page/${data.current}/${data.size}`,data)
 }
 export const applyBusiness = (data) =>{
   return postRequest(actApi+`/business/apply`,data)
@@ -57,7 +57,7 @@ export const delegate = (params) => {
 /********************************我的已办*****************************************/
 // 获取已办列表
 export const doneList = (params) => {
-  return postRequest(actApi+'/task/doneList', params)
+  return getRequest(actApi+`/task/doneList/${params.current}/${params.size}`, params)
 }
 // 获取流程流转历史
 export const historicFlow = (id, params) => {
@@ -102,7 +102,7 @@ export const deleteProcessIns = (ids, params) => {
 
 //流程列表
 export const getProcessDataList = (param) =>{
-  return postRequest(actApi+`/process/page`,param)
+  return getRequest(actApi+`/process/page/${param.current}/${param.size}`,param)
 }
 
 export const getProcessAllDate = () =>{

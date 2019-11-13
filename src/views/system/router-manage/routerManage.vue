@@ -6,7 +6,7 @@
     <Card :bordered="false">
       <Row>
         <Col span="12">
-        <Button type="primary" icon="ios-add" @click="handleAddRouter()">添加路由</Button>
+          <Button type="primary" icon="ios-add" @click="handleAddRouter()">添加路由</Button>
         </Col>
       </Row>
       <Row>
@@ -52,6 +52,7 @@
             </Col>
             <Col span="8">
               <Button type="primary" icon="ios-add" @click="handleAddFilters()">新增参数</Button>
+              <Button type="error" icon="ios-close" @click="handleDelFilters()">删除参数</Button>
             </Col>
           </Row>
         </FormItem>
@@ -71,6 +72,7 @@
             </Col>
             <Col span="8">
               <Button type="primary" icon="ios-add" @click="handleAddPredicates()">新增参数</Button>
+              <Button type="error" icon="ios-close" @click="handleDelPredicates()">删除参数</Button>
             </Col>
           </Row>
         </FormItem>
@@ -80,7 +82,7 @@
 </template>
 
 <script>
-  import { addRouter,routers } from '@/api/index'
+  import { addRouter, routers } from '@/api/index'
   import { getRouters } from '../../../api'
 
   export default {
@@ -140,7 +142,7 @@
                     }
                   }
                 }, '删除')
-              ]);
+              ])
             }
           }
         ],
@@ -161,7 +163,7 @@
           predicates: [{
             name: 'Path',
             args: {
-              pattern: '/jd'
+              pattern: '/test'
             }
           }]
         }
@@ -169,10 +171,10 @@
     },
     methods: {
       //路由信息列表
-      init(){
-        this.getRouterTablePageList();
+      init() {
+        this.getRouterTablePageList()
       },
-      getRouterTablePageList(){
+      getRouterTablePageList() {
         getRouters().then(res => {
           this.routerTableData = res.data
         })
@@ -190,6 +192,10 @@
           }
         )
       },
+      handleDelPredicates() {
+        console.log(this.formItem.predicates.length)
+        this.formItem.predicates.splice(this.formItem.predicates.length - 1, 1)
+      },
       handleAddFilters() {
         this.formItem.filters.push({
           name: '',
@@ -198,14 +204,23 @@
           }
         })
       },
+      handleDelFilters() {
+        this.formItem.filters.splice(this.formItem.filters.length - 1, 1)
+      },
       submitRouter() {
         addRouter(this.formItem).then(res => {
           this.routerAddModal = false
         })
       },
-      show(p){
+      show(p) {
         this.routerAddModal = true
-        this.formItem = p.row
+        console.log(p.row)
+        this.formItem.routerName = p.row.routerName
+        this.formItem.uri = p.row.uri
+        this.formItem.order = p.row.order
+        this.formItem.select = p.row.select
+        this.formItem.filters = JSON.parse(p.row.select)
+        this.formItem.predicates = JSON.parse(p.row.predicates)
       }
     },
     mounted() {

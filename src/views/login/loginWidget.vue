@@ -74,7 +74,7 @@
   import { isvalidUsernameOrPassword } from '@/utils/validate'
   import { setTimer, touchError } from '@/utils/timer'
   import { chooseElegantSentencesLogin } from '@/utils/chooseElegantSentences'
-  import { verifyCaptchaUrl,serverAttach } from '@/api/index'
+  import { verifyCaptchaUrl, serverAttach } from '@/api/index'
 
   export default {
     name: 'LoginWidget',
@@ -100,10 +100,10 @@
         dataBeforeTime: 0,
         IsNormal: '待获取',
         loginForm: {
-          username: 'admin',
-          password: '123456',
+          username: 'test',
+          password: ''
         },
-        captchaFlag:'0',
+        captchaFlag: '0',
         loginRules: {
           username: [{ required: true, trigger: 'blur', validator: validateUsername }],
           password: [{ required: true, trigger: 'blur', validator: validatePassword }]
@@ -112,11 +112,11 @@
         captchaOption: {
           // 各平台的参数，具体请参阅个平台文档
           // 以下为腾讯验证码的参数
-          appid: '2084090782',
+          appid: '2084090782'
           // 以下为极验验证码的参数
           //product: 'bind',
         },
-        verifyCaptchaUrl:'',
+        verifyCaptchaUrl: ''
       }
     },
     computed: {
@@ -174,10 +174,8 @@
       // 回调监听
       // status: 1成功,2验证中,0失败
       // res: 三方返回的原始数据
-      captchaNotice(status, res){
-        console.log("是否成功"+status)
-        console.log(res)
-        if(res.code==='5200'){
+      captchaNotice(status, res) {
+        if (res.code === '5200') {
           this.loading = true
           this.$refs.loginForm.validate(valid => {
             if (valid) {

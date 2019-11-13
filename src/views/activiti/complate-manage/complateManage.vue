@@ -102,9 +102,7 @@
         selectList: [], // 多选数据
         searchForm: {
           // 搜索框对应data对象
-          t: {
-            name: ''
-          },
+          name: '',
           current: 1, // 当前页数
           size: 10 // 页面大小
         },
@@ -123,38 +121,31 @@
           // 表头
           {
             type: 'selection',
-            width: 60,
             align: 'center'
           },
           {
             type: 'index',
-            width: 60,
             align: 'center'
           },
           {
             title: '任务名称',
-            key: 'name',
-            width: 160
+            key: 'name'
           },
           {
             title: '所属流程',
-            key: 'processName',
-            width: 150
+            key: 'processName'
           },
           {
             title: '委托代办人',
-            key: 'owner',
-            width: 130
+            key: 'owner'
           },
           {
             title: '流程发起人',
-            key: 'applyer',
-            width: 130
+            key: 'applyer'
           },
           {
             title: '优先级',
             key: 'priority',
-            width: 100,
             sortable: true,
             render: (h, params) => {
               let text = ''
@@ -169,20 +160,17 @@
           {
             title: '审批操作',
             key: 'deleteReason',
-            align: 'center',
-            width: 130
+            align: 'center'
           },
           {
             title: '审批意见',
             key: 'comment',
-            align: 'center',
-            width: 130
+            align: 'center'
           },
           {
             title: '耗时',
             key: 'duration',
             align: 'center',
-            width: 130,
             render: (h, params) => {
               return h('div', util.millsToTime(params.row.duration))
             }
@@ -190,7 +178,6 @@
           {
             title: '创建时间',
             key: 'createTime',
-            width: 150,
             sortType: 'desc',
             sortable: true
           },

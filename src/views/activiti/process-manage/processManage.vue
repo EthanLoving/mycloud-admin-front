@@ -10,7 +10,7 @@
             <Form-item label="流程名称" prop="t.name">
               <Input
                 type="text"
-                v-model="searchForm.t.name"
+                v-model="searchForm.name"
                 placeholder="请输入名称"
                 clearable
                 style="width: 200px"
@@ -19,7 +19,7 @@
             <Form-item label="标识Key" prop="t.processKey">
               <Input
                 type="text"
-                v-model="searchForm.t.processKey"
+                v-model="searchForm.processKey"
                 placeholder="请输入标识"
                 clearable
                 style="width: 200px"
@@ -48,7 +48,7 @@
           <Button @click="getDataList" icon="md-refresh">刷新</Button>
           <i-switch
             size="large"
-            v-model="searchForm.t.latest"
+            v-model="searchForm.latest"
             @on-change="getDataList"
             style="margin:0 5px"
           >
@@ -226,14 +226,12 @@
         diagramUrl: '',
         searchForm: {
           // 搜索框对应data对象
-          t: {
-            latest: true,
-            name: '',
-            processKey: '',
-            status: '',
-            startDate: '', // 起始时间
-            endDate: '' // 终止时间
-          },
+          latest: true,
+          name: '',
+          processKey: '',
+          status: '',
+          startDate: '', // 起始时间
+          endDate: '', // 终止时间
           current: 1, // 当前页数
           size: 10 // 页面大小
         },
@@ -713,8 +711,8 @@
       },
       selectDateRange(v) {
         if (v) {
-          this.searchForm.t.startDate = v[0]
-          this.searchForm.t.endDate = v[1]
+          this.searchForm.startDate = v[0]
+          this.searchForm.endDate = v[1]
         }
       },
       getDataList() {
@@ -737,8 +735,8 @@
         this.searchForm.current = 1
         this.searchForm.size = 10
         this.selectDate = null
-        this.searchForm.t.startDate = ''
-        this.searchForm.t.endDate = ''
+        this.searchForm.startDate = ''
+        this.searchForm.endDate = ''
         // 重新加载数据
         this.getDataList()
       },
