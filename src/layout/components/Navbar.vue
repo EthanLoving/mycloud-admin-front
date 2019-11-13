@@ -82,8 +82,10 @@ export default {
         onOk: () => {
           console.log("确认登出")
           this.$store.dispatch('Logout').then(() => {
-            //location.reload() // In order to re-instantiate the vue-router object to avoid bugs
-            this.$router.push(`/login`)
+            this.$store.dispatch('resetRouter').then(() => {
+              //window.location.reload() // In order to re-instantiate the vue-router object to avoid bugs
+              this.$router.push("/login")
+            })
           })
         }
       });

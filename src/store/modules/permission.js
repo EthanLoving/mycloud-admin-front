@@ -49,7 +49,11 @@ const permission = {
     SET_ROUTERS: (state, routers) => {
       state.addRouters = routers
       state.routers = constantRouterMap.concat(routers)
-    }
+    },
+    RESET_ROUTERS:(state, routers) => {
+      state.addRouters = []
+      state.routers = constantRouterMap.concat(routers)
+    },
   },
   actions: {
     GenerateRoutes({ commit }, data) {
@@ -58,12 +62,17 @@ const permission = {
         //动态权限菜单
         let accessedRouters = getMenus()
         let otherRoutes = otherRouter;
-
         otherRoutes.forEach(o=>{
           accessedRouters.push(o);
         })
         let permissions = filterAsyncRouter(accessedRouters)
         commit('SET_ROUTERS', permissions)
+        resolve()
+      })
+    },
+    resetRouter({ commit }, data) {
+      return new Promise(resolve => {
+        commit('RESET_ROUTERS',[])
         resolve()
       })
     }

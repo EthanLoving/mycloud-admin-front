@@ -43,3 +43,7 @@ export function setMenus(menus) {
 export function removeMenus() {
   return window.localStorage.removeItem(Menukey)
 }
+
+export function removeUserInfo() {
+  window.localStorage.clear()
+}

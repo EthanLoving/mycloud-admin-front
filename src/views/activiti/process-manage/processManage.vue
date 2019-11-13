@@ -7,7 +7,7 @@
       <Card>
         <Row>
           <Form ref="searchForm" :model="searchForm" inline :label-width="70" class="search-form">
-            <Form-item label="流程名称" prop="t.name">
+            <Form-item label="流程名称" prop="name">
               <Input
                 type="text"
                 v-model="searchForm.name"
@@ -16,7 +16,7 @@
                 style="width: 200px"
               />
             </Form-item>
-            <Form-item label="标识Key" prop="t.processKey">
+            <Form-item label="标识Key" prop="processKey">
               <Input
                 type="text"
                 v-model="searchForm.processKey"

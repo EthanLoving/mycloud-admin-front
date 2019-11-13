@@ -3,11 +3,10 @@ import store from './store'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
 import { getToken } from '@/utils/auth' // get token from cookie
-import {getRoles} from '@/utils/userinfo'
+import { getRoles } from '@/utils/userinfo'
 import getPageTitle from '@/utils/get-page-title'
 import { setTitle } from '@/utils/util' // 设置浏览器头部标题
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
-
 
 // 权限拦截
 function hasPermission(roles, permissionRoles) {
@@ -15,8 +14,9 @@ function hasPermission(roles, permissionRoles) {
   if (!permissionRoles) return true
   return roles.some(role => permissionRoles.indexOf(role) >= 0)
 }
+
 //路由白名单
-const whiteList = ['/login', '/auth-redirect','/regist'] // no redirect whitelist
+const whiteList = ['/login', '/auth-redirect', '/regist'] // no redirect whitelist
 
 router.beforeEach((to, from, next) => {
   NProgress.start()
@@ -36,17 +36,16 @@ router.beforeEach((to, from, next) => {
       next({ path: '/' })
       NProgress.done() // if current page is dashboard will not trigger	afterEach hook, so manually handle it
     } else {
-      const hasRole = getRoles()&&getRoles().length>0
-      if (store.getters.addRouters.length===0) {
+      if (store.getters.addRouters.length === 0) {
         store.dispatch('GetInfo').then(res => { // 拉取用户信息
           const roles = res.roles // note: role must be a array! such as: ['editor','develop']
           store.dispatch('GenerateRoutes', { roles }).then(() => { // 根据roles权限生成可访问的路由表
             // 动态添加可访问路由表
             router.addRoutes(store.getters.addRouters)
-            next({ ...to, replace: true }) // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
+            next({ ...to, replace: true }) // hack方法 确保addRoutes已完成 ,设置replace: true，这样导航就不会留下历史记录
           })
         }).catch((err) => {
-          store.dispatch('FedLogOut').then(() => {
+          store.dispatch('Logout').then(() => {
             next({ path: '/' })
           })
         })
@@ -55,7 +54,7 @@ router.beforeEach((to, from, next) => {
         if (hasPermission(store.getters.roles, to.meta.roles)) {
           next()//
         } else {
-          next({ path: '/401', replace: true, query: { noGoBack: true }})
+          next({ path: '/401', replace: true, query: { noGoBack: true } })
         }
       }
     }

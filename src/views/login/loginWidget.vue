@@ -100,7 +100,7 @@
         dataBeforeTime: 0,
         IsNormal: '待获取',
         loginForm: {
-          username: 'test',
+          username: '',
           password: ''
         },
         captchaFlag: '0',

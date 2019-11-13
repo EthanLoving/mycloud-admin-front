@@ -1,7 +1,7 @@
 import { login, logout, getInfo } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
-import { setMenus,setBtns,setRoles,removeMenus } from '@/utils/userinfo'
+import { setMenus,setBtns,setRoles,removeUserInfo } from '@/utils/userinfo'
 import { setStore, getStore, removeStore } from '@/utils/storage'
 const user = {
   state: {
@@ -118,33 +118,16 @@ const user = {
     Logout({ commit, state }) {
       return new Promise((resolve, reject) => {
         logout(state.token).then(() => {
-          console.log("登出")
+          commit('SET_TOKEN', '')
+          commit('SET_ROLES', [])
+          removeUserInfo()
           removeToken()
-          removeMenus()
-          console.log("清除用户数据成功")
+          resetRouter()
+          console.log("登出,清除用户数据成功")
           resolve()
         }).catch(error => {
           reject(error)
         })
-      })
-    },
-
-    // 清除token
-    resetToken({ commit }) {
-      return new Promise(resolve => {
-        commit('SET_TOKEN', '')
-        commit('SET_ROLES', [])
-        removeToken()
-        resolve()
-      })
-    },
-
-    // 前端 登出
-    FedLogOut({ commit }) {
-      return new Promise(resolve => {
-        commit('SET_TOKEN', '')
-        removeToken()
-        resolve()
       })
     },
     // 动态修改权限

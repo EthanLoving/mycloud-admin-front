@@ -53,7 +53,7 @@ axios.interceptors.response.use(
           cancelButtonText: 'Cancel',
           type: 'warning'
         }).then(() => {
-          store.dispatch('user/resetToken').then(() => {
+          store.dispatch('Logout').then(() => {
             location.reload()
           })
         })
