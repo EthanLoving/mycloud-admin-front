@@ -193,7 +193,6 @@
         )
       },
       handleDelPredicates() {
-        console.log(this.formItem.predicates.length)
         this.formItem.predicates.splice(this.formItem.predicates.length - 1, 1)
       },
       handleAddFilters() {
@@ -214,7 +213,6 @@
       },
       show(p) {
         this.routerAddModal = true
-        console.log(p.row)
         this.formItem.routerName = p.row.routerName
         this.formItem.uri = p.row.uri
         this.formItem.order = p.row.order

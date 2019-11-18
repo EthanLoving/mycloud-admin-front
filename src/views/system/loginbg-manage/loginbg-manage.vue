@@ -144,16 +144,13 @@
         })
       },
       async videoSeccess(res, file, fileList) {
-        console.log('video成功==>', res)
         this.bgForm.bgVideo = res.data
         this.videoShow = true
       },
       async webmSeccess(res, file, fileList) {
-        console.log('webm成功==>', res)
         this.bgForm.bgWebm = res.data
       },
       async imgSeccess(res, file, fileList) {
-        console.log('img成功==>', res)
         this.bgForm.bgImg = res.data
       },
       handleVideoFormatError(file) {

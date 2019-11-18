@@ -154,7 +154,6 @@ export function isvalidatemobile(phone) {
   if (!validatenull(phone)) {
     if (phone.length === 11) {
       if (isPhone.test(phone)) {
-        console.log("phone=========>",phone)
         result = true
       } else {
         msg = '手机号码格式不正确'

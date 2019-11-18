@@ -154,7 +154,6 @@
               this.loading = false
             })
           } else {
-            console.log('登陆提交异常!!')
             return false
           }
         })
@@ -187,7 +186,6 @@
                 this.loading = false
               })
             } else {
-              console.log('登陆提交异常!!')
               return false
             }
           })

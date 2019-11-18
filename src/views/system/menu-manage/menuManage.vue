@@ -273,7 +273,6 @@
 <script>
   import {
     getMenuTree,
-    getAllPermissionList,
     addPermission,
     editPermission,
     deletePermission,
@@ -281,7 +280,6 @@
     getDictDataByType
   } from '@/api/system/menu-manage'
   import IconChoose from '@/my-components/icon-choose'
-  // import util from "@/libs/util.js";
   export default {
     name: 'menu-manage',
     components: {
@@ -433,7 +431,6 @@
        * @param n
        */
       selectTree(v, n) {
-        console.log('执行了选择节点', n)
         if (n.level === 1 || n.level === 2) {
           this.isButton = false
           this.isMenu = true
@@ -451,9 +448,6 @@
         let menu = JSON.parse(str)
         this.menuForm = menu
         this.editTitle = menu.title
-        // } else {
-        //   this.cancelEdit()
-        // }
       },
       cancelEdit() {
         let data = this.$refs.tree.getSelectedNodes()[0]
@@ -521,7 +515,6 @@
             } else {
               this.menuFormAdd.title = this.menuFormAdd.name
             }
-            console.log(this.menuFormAdd)
             addPermission(this.menuFormAdd).then(res => {
               this.submitLoading = false
               if (res.success === true) {
@@ -733,7 +726,9 @@
             id: '0',
             name: '新增菜单(临时)',
             title: '新增菜单(临时)',
+            parentId: data.id,
             expand: true,
+            enabled: 1,
             level: data.level + 1,
             type: 0
           })
@@ -744,7 +739,6 @@
 
       },
       appendBtn(data) {
-        console.log(data.type, data.level)
         //如果是不是一级菜单
         if (data.type === 0 && data.level !== 0) {
           const children = data.children || []
@@ -752,6 +746,7 @@
             id: '0',
             title: '新增按钮(临时)',
             level: data.level + 1,
+            parentId: data.id,
             expand: true,
             selected: true,
             enabled: 1,
@@ -768,13 +763,11 @@
           title: '确认删除此节点',
           content: '是否确认提交？',
           onOk: () => {
-            this.$Message.success('删除成功')
             deletePermission(data.id).then(res => {
               this.submitLoading = false
               if (res.success === true) {
-                this.$Message.success('操作成功')
-                this.getUserList()
-                this.userModalVisible = false
+                this.$Message.success('删除成功')
+                this.init()
               }
             })
           },
@@ -782,7 +775,6 @@
             this.$Message.info('取消删除')
           }
         })
-        console.log(data.id)
         // const parentKey = root.find(el => el === node).parent
         // const parent = root.find(el => el.nodeKey === parentKey).node
         // const index = parent.children.indexOf(data)
@@ -804,7 +796,6 @@
       handleDrop(root, node, data) {
         event.preventDefault()
         const parentKey = root.find(el => el === node).parent !== 'undefined' ? root.find(el => el === node).parent : ''
-        console.log('parentKey==>', parentKey)
         if (parentKey === 0 || parentKey) {
           const parent = root.find(el => el.nodeKey === parentKey).node
           const index = parent.children.indexOf(data)

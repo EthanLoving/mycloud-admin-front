@@ -86,7 +86,6 @@
         handleGo() {
           let url = this.url;
           this.go = this.url;
-          console.log(this.url)
         },
         handleOpen() {
           window.open(this.url);

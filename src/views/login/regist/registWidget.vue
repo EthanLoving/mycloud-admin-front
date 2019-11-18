@@ -124,7 +124,6 @@
               this.loading = false
             })
           } else {
-            console.log('登陆提交异常!!')
             return false
           }
         })
@@ -142,7 +141,6 @@
         })
       },
       handleRegist(){
-        console.log(1)
         this.$router.push({ path: '/regist' })
       }
     }

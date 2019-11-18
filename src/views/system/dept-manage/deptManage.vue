@@ -167,7 +167,6 @@
           this.loading = false;
           if (res.success === true) {
             res.data.forEach(function(e) {
-              console.log(e);
               if (e.isParent) {
                 e.loading = false;
                 e.title = e.deptName;

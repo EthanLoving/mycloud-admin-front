@@ -73,7 +73,6 @@ export default {
           progress: function (p) {
             let e = {}
             e.percent = Math.floor(p * 100)
-            // console.log('Progress: ' + p)
             option.onProgress(e)
           }
         }).then((val) => {

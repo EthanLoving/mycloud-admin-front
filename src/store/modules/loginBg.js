@@ -22,7 +22,6 @@ const loginBg = {
         commit('SET_BG_VIDEO',res.data.bgVideo)
         commit('SET_BG_WEBM',res.data.bgWebm)
         commit('SET_BG_IMG',res.data.bgImg)
-        console.log(res.data.bgVideo)
       })
     }
   }

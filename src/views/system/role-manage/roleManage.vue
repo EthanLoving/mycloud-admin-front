@@ -550,7 +550,6 @@
           v.pids = 'xxx'
         }
         let rolePerms = v.pids.split(',')
-        console.log(rolePerms.length)
         this.checkPermTree(this.permData, rolePerms)
         // 递归判断子节点
 
@@ -629,7 +628,6 @@
       loadData(item, callback) {
         let that = this
         loadDepartment(item.id).then(res => {
-          console.log(this.editDepartments)
           if (this.editDepartments === undefined) {
             this.editDepartments = 'xxx'
           }

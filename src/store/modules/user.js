@@ -123,7 +123,6 @@ const user = {
           removeUserInfo()
           removeToken()
           resetRouter()
-          console.log("登出,清除用户数据成功")
           resolve()
         }).catch(error => {
           reject(error)

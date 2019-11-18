@@ -644,7 +644,6 @@
         this.userForm.phone = data.phone
         this.userForm.email = data.email
         this.userForm.avatar = data.avatar
-        console.log(data.roles)
         if (data.roles !== undefined) {
           this.userForm.rids = data.roles.split(',')
         }
@@ -707,7 +706,6 @@
       /* 查询用户列表*/
       getUserList() {
         getUserListPage(this.current,this.size,this.searchFrom).then(res => {
-          console.log(111)
           this.current = res.data.current
           this.total = res.data.total
           const data = res.data.records
@@ -743,7 +741,6 @@
             })
             ids = ids.substring(0, ids.length - 1)
             this.operationLoading = true
-            console.log(ids)
             delUser(ids).then(res => {
               this.operationLoading = false
               if (res.success === true) {
@@ -782,7 +779,6 @@
       },
       //上传头像成功
       handleSuccess(res, file) {
-        console.log('res==>', res)
         this.userForm.avatar = res.data
         file.url = res.data
         file.name = '7eb99afb9d5f317c912f08b5212fd69a'

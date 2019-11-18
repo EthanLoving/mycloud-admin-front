@@ -80,7 +80,6 @@ export default {
         title: '是否退出',
         content: '<p>确认要退出吗？</p>',
         onOk: () => {
-          console.log("确认登出")
           this.$store.dispatch('Logout').then(() => {
             this.$store.dispatch('resetRouter').then(() => {
               //window.location.reload() // In order to re-instantiate the vue-router object to avoid bugs
