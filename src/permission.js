@@ -16,7 +16,7 @@ function hasPermission(roles, permissionRoles) {
 }
 
 //路由白名单
-const whiteList = ['/login', '/auth-redirect', '/regist'] // no redirect whitelist
+const whiteList = ['/login', '/auth-redirect', '/regist'] // 不重定向白名单
 
 router.beforeEach((to, from, next) => {
   NProgress.start()
@@ -26,7 +26,7 @@ router.beforeEach((to, from, next) => {
     store.commit('SET_BROWSERHEADERTITLE', {
       browserHeaderTitle: browserHeaderTitle
     })
-    /* has token*/
+    /* 存在 token*/
     if (store.getters.isLock && to.path !== '/lock') {
       next({
         path: '/lock'
@@ -46,6 +46,7 @@ router.beforeEach((to, from, next) => {
           })
         }).catch((err) => {
           store.dispatch('Logout').then(() => {
+            Message.error(err || '验证失败，请重新登录')
             next({ path: '/' })
           })
         })

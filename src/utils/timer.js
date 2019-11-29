@@ -21,5 +21,5 @@ export function touchError(vm, call, error) {
   // }
   // store.commit('enableMsgToast')
   stopTimer()
-  vm.$router.push({ path: '/disconnect' })
+  vm.$router.push({ path: '/server-error' })
 }

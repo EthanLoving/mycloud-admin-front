@@ -31,14 +31,14 @@ axios.interceptors.request.use(
 // response interceptor
 axios.interceptors.response.use(
   /**
-   * If you want to get http information such as headers or status
-   * Please return  response => response
+   * 如果您想获得http信息，如头信息或状态信息
+   * 请 return  response => response
    */
 
   /**
-   * Determine the request status by custom code
+   * 通过自定义代码确定请求状态
    * Here is just an example
-   * You can also judge the status by HTTP Status Code
+   * 您还可以通过HTTP状态码来判断状态
    */
   response => {
     const res = response.data

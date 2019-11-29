@@ -64,6 +64,11 @@ export const constantRouterMap = [
     hidden: true
   },
   {
+    path: '/server-error',
+    component: () => import('@/views/error-page/server-error'),
+    hidden: true
+  },
+  {
     path: '/profile',
     component: Layout,
     redirect: '/profile/index',

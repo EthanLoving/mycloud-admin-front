@@ -245,7 +245,7 @@
           phone: '',
           email: '',
           gender: '',
-          deptName: 'sss'
+          deptName: ''
         },
         roleList: [],
         dictSex: [],
@@ -623,6 +623,7 @@
         this.$refs.userForm.resetFields()
         this.userForm.deptId = []
         this.userModalVisible = true
+        this.submitLoading = false
       },
       /* 点击编辑*/
       edit(row) {

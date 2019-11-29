@@ -72,7 +72,7 @@
 
 <script>
   import { isvalidUsernameOrPassword } from '@/utils/validate'
-  import { setTimer, touchError } from '@/utils/timer'
+  import { setTimer,stopTimer, touchError } from '@/utils/timer'
   import { chooseElegantSentencesLogin } from '@/utils/chooseElegantSentences'
   import { verifyCaptchaUrl, serverAttach } from '@/api/index'
 
@@ -146,6 +146,7 @@
         this.loading = true
         this.$refs.loginForm.validate(valid => {
           if (valid) {
+            stopTimer()
             this.loading = true
             this.$store.dispatch('Login', this.loginForm).then(() => {
               this.loading = false
