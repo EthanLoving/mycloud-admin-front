@@ -484,10 +484,10 @@
               this.menuForm.btnType = ''
             }
             if (this.menuForm.type == 1) {
-              this.menuForm.name = this.menuForm.title
               this.menuForm.icon = ''
               this.menuForm.component = ''
             }
+            this.menuForm.name = this.menuForm.title
             editPermission(this.menuForm).then(res => {
               this.submitLoading = false
               if (res.success === true) {

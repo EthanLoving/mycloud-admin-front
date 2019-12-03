@@ -41,6 +41,10 @@ export function loadDepartment(data) {
   return getRequest(userApi + '/dept/' + data)
 }
 
+export function getDeptTree() {
+  return getRequest(userApi + '/dept/tree')
+}
+
 export function editRoleDep(data) {
   return postRequest(userApi + '/role/editDept', data)
 }
